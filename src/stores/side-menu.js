@@ -36,6 +36,23 @@ export const useSideMenuStore = defineStore('sideMenu', {
                         title: 'Create Brand'
                     }
                 ]
+            },
+            {
+                icon: 'FileTextIcon',
+                pageName: 'product',
+                title: 'Product',
+                subMenu: [
+                    {
+                        icon: 'ListIcon',
+                        pageName: 'product-list',
+                        title: 'List Product'
+                    },
+                    {
+                        icon: 'PlusSquareIcon',
+                        pageName: 'product-create',
+                        title: 'Create Product'
+                    }
+                ]
             }
         ]
     })

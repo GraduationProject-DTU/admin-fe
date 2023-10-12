@@ -4,6 +4,8 @@ import ListUser from '../views/user/List.vue'
 import CreateUser from '../views/user/Create.vue'
 import ListBrand from '../views/brand/List.vue'
 import CreateBrand from '../views/brand/Create.vue'
+import ListProduct from '../views/product/List.vue'
+import CreateProduct from '../views/product/Create.vue'
 import Login from '../views/auth/Login.vue'
 import ErrorPage from '../views/error-page/Main.vue'
 import store from '../stores'
@@ -32,6 +34,16 @@ const routes = [
                 path: '/brand/create',
                 name: 'brand-create',
                 component: CreateBrand
+            },
+            {
+                path: '/product/list',
+                name: 'product-list',
+                component: ListProduct
+            },
+            {
+                path: '/product/create',
+                name: 'product-create',
+                component: CreateProduct
             }
         ]
     },
@@ -47,7 +59,7 @@ const routes = [
     },
 
     {
-        path: '/admin/login',
+        path: '/login',
         name: 'login',
         component: Login
     }

@@ -6,35 +6,35 @@
         </div>
         <div class="grid grid-cols-12 gap-6 mt-5" v-if="!loadingIconAction">
             <div class="intro-y col-span-12 flex flex-wrap xl:flex-nowrap items-center mt-2">
-                <button class="btn btn-primary shadow-md mr-2" @click="createBrand">Thêm</button>
+                <button class="btn btn-primary shadow-md mr-2" @click="createProduct">Thêm</button>
             </div>
-            <div class="intro-y col-span-12 overflow-auto 2xl:overflow-visible">
-                <table class="table table-report -mt-2">
-                    <thead>
-                        <tr>
-                            <th class="whitespace-nowrap">STT</th>
-                            <th class="whitespace-nowrap">Tên thương hiệu</th>
-                            <th class="whitespace-nowrap">Ngày tạo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="intro-x" v-for="(item, index) in listBrand" :key="index" :value="index">
-                            <td>{{ index + 1 }}</td>
-                            <td>{{ item.title }}</td>
-                            <td>{{ item.createdAt.substring(0, 10) }}</td>
-                            <td class="table-report__action w-30">
-                                <div class="flex justify-center items-center">
-                                    <a class="flex items-center mr-3 text-primary" href="javascript:;" @click="updateBrand(item._id)">
-                                        <EditIcon class="w-cutom-icon mr-1" />
-                                    </a>
-                                    <a class="flex items-center text-danger" href="javascript:;" @click="onToggle(item._id)">
-                                        <Trash2Icon class="w-cutom-icon mr-1" />
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div v-for="(item, index) in listProduct" :key="index" class="intro-y col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <div class="box">
+                    <div class="p-5">
+                        <div
+                            class="h-40 2xl:h-56 image-fit rounded-md overflow-hidden before:block before:absolute before:w-full before:h-full before:top-0 before:left-0 before:z-10 before:bg-gradient-to-t before:from-black before:to-black/10"
+                        >
+                            <img alt="Midone - HTML Admin Template" class="rounded-md" :src="item.image" />
+                            <span class="absolute top-0 bg-pending/80 text-white text-xs m-5 px-2 py-1 rounded z-10">{{item.brand}}</span>
+                            <div class="absolute bottom-0 text-white px-5 pb-6 z-10">
+                                <a href="" class="block font-medium text-base">{{item.title}}</a>
+                            </div>
+                        </div>
+                        <div class="text-slate-600 dark:text-slate-500 mt-2">
+                            <div class="flex items-center text-sm"><LinkIcon class="w-4 h-4 mr-2" /> Giá: {{item.price}}</div>
+                            <div class="flex items-center mt-2 text-sm"><LayersIcon class="w-4 h-4 mr-2" /> Số lượng: {{item.quantity}}</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center lg:justify-end items-center p-5 border-t border-slate-200/60 dark:border-darkmode-400">
+                        <a class="flex items-center text-primary mr-auto" href="javascript:;"> <EyeIcon class="w-4 h-4 mr-1" /> Preview </a>
+                        <a class="flex items-center mr-3" href="javascript:;" @click="updateProduct(item._id)">
+                            <CheckSquareIcon class="w-4 h-4 mr-1" /> Edit
+                        </a>
+                        <a class="flex items-center text-danger" href="javascript:;" @click="onToggle(item._id)">
+                            <Trash2Icon class="w-4 h-4 mr-1" /> Delete
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="false-delete" class="toastify-content toastify-content-update hidden flex">
@@ -107,7 +107,7 @@
                                         class="transition duration-200 border shadow-sm inline-flex items-center justify-center py-2 px-3 rounded-md font-medium cursor-pointer focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus-visible:outline-none dark:focus:ring-slate-700 dark:focus:ring-opacity-50 [&amp;:hover:not(:disabled)]:bg-opacity-90 [&amp;:hover:not(:disabled)]:border-opacity-90 [&amp;:not(button)]:text-center disabled:opacity-70 disabled:cursor-not-allowed bg-danger border-danger text-white dark:border-danger w-24"
                                         type="button"
                                         fdprocessedid="ujsyd"
-                                        @click="deleteBrand"
+                                        @click="deleteProduct"
                                     >
                                         Xóa
                                     </button>
@@ -135,25 +135,26 @@
 </template>
 <script>
 import Toastify from 'toastify-js'
-import BrandApi from '../../api-services/BrandApi'
+import ProductApi from '../../api-services/ProductApi'
 
 export default {
     data() {
         return {
-            listBrand: [],
+            listProduct: [],
             loadingIconAction: true,
             isOpen: false,
             idDel: null
         }
     },
     created() {
-        this.getListBrand()
+        this.getListProduct()
     },
     methods: {
-        async getListBrand() {
+        async getListProduct() {
             this.loadingIconAction = true
-            const res = await BrandApi.list()
-            this.listBrand = res.brand
+            const res = await ProductApi.getAllProduct()
+            this.listProduct = res.mess
+            console.log(this.listProduct);
             this.loadingIconAction = false
         },
         onToggle(id) {
@@ -163,10 +164,10 @@ export default {
         closeModal() {
             this.isOpen = !this.isOpen
         },
-        async deleteBrand() {
+        async deleteProduct() {
             this.loadingIconAction = true
-            const res = await BrandApi.deleteBrand(this.idDel)
-            if (res.mess !== 'Delete successfully') {
+            const res = await ProductApi.deleteProduct(this.idDel)
+            if (res.mess !== 'delete successfully') {
                 Toastify({
                     node: dom('#false-delete').clone().removeClass('hidden')[0],
                     duration: 3000,
@@ -187,16 +188,16 @@ export default {
                     position: 'right',
                     stopOnFocus: true
                 }).showToast()
-                this.getListBrand()
+                this.getListProduct()
             }
             this.isOpen = !this.isOpen
         },
-        createBrand() {
-            this.$router.push({ path: '/brand/create' })
+        createProduct() {
+            this.$router.push({ path: '/product/create' })
         },
 
-        updateBrand(id) {
-            this.$router.push({ path: '/brand/create', query: { id: id } })
+        updateProduct(id) {
+            this.$router.push({ path: '/product/create', query: { id: id } })
         }
     }
 }

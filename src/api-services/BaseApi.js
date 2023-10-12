@@ -134,13 +134,13 @@ export default class BaseApi {
     }
 
     getHeaders(token, config = {}) {
+        token = getToken()
         let headers = {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
             'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
             'Content-Type': 'application/json'
         }
-        console.log(token)
         if (token) {
             headers['token'] = `Bearer ${token}`
         }
@@ -153,15 +153,15 @@ export default class BaseApi {
     }
 
     getHeadersDataForm(token = null, config = {}) {
+        token = getToken()
         let headers = {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
             'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
             'Content-Type': 'multipart/form-data'
         }
-
         if (token) {
-            headers['Authorization'] = `Bearer ${token}`
+            headers['token'] = `Bearer ${token}`
         }
 
         if (config) {
