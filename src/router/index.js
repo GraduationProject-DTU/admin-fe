@@ -6,6 +6,7 @@ import ListBrand from '../views/brand/List.vue'
 import CreateBrand from '../views/brand/Create.vue'
 import ListProduct from '../views/product/List.vue'
 import CreateProduct from '../views/product/Create.vue'
+import DashboardOverview from '../views/dashboard-overview/Main.vue'
 import Login from '../views/auth/Login.vue'
 import ErrorPage from '../views/error-page/Main.vue'
 import store from '../stores'
@@ -15,6 +16,11 @@ const routes = [
         path: '/',
         component: SideMenu,
         children: [
+            {
+                path: '/',
+                name: 'dashboard-overview',
+                component: DashboardOverview
+            },
             {
                 path: '/user/list',
                 name: 'user-list',

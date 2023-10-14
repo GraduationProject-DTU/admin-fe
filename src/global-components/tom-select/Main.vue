@@ -1,5 +1,8 @@
 <template>
-  <select v-select-directive="{ props, emit, computedOptions }" class="tom-select">
+  <select
+    v-select-directive="{ props, emit, computedOptions }"
+    class="tom-select"
+  >
     <slot></slot>
   </select>
 </template>
@@ -76,12 +79,6 @@ const computedOptions = computed(() => {
       dropdown_input: {},
       ...props.options.plugins,
     },
-    render: {
-      no_results: function (data, escape) {
-        return '<div class="no-results">Không tìm thấy kết quả "' + escape(data.input) + '"</div>';
-      },
-      ...props.options.render,
-    },
   };
 
   if (Array.isArray(props.modelValue)) {
@@ -92,8 +89,8 @@ const computedOptions = computed(() => {
         return confirm(
           values.length > 1
             ? "Are you sure you want to remove these " +
-            values.length +
-            " items?"
+                values.length +
+                " items?"
             : 'Are you sure you want to remove "' + values[0] + '"?'
         );
       },

@@ -4,7 +4,19 @@ export const useSideMenuStore = defineStore('sideMenu', {
     state: () => ({
         menu: [
             {
-                icon: 'FileTextIcon',
+                icon: 'HomeIcon',
+                pageName: 'dashboard-overview',
+                title: 'DashBoard',
+                subMenu: [
+                    {
+                        icon: 'ListIcon',
+                        pageName: 'dashboard-overview',
+                        title: 'Overview'
+                    }
+                ]
+            },
+            {
+                icon: 'UserIcon',
                 pageName: 'user',
                 title: 'User',
                 subMenu: [
@@ -21,7 +33,7 @@ export const useSideMenuStore = defineStore('sideMenu', {
                 ]
             },
             {
-                icon: 'FileTextIcon',
+                icon: 'SlackIcon',
                 pageName: 'brand',
                 title: 'Brand',
                 subMenu: [
@@ -38,7 +50,7 @@ export const useSideMenuStore = defineStore('sideMenu', {
                 ]
             },
             {
-                icon: 'FileTextIcon',
+                icon: 'ShoppingBagIcon',
                 pageName: 'product',
                 title: 'Product',
                 subMenu: [

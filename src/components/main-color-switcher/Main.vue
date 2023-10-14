@@ -73,7 +73,7 @@ const setColorSchemeClass = () => {
 };
 
 const switchColorScheme = (colorScheme) => {
-  colorSchemeStore.setColorScheme("theme-3");
+  colorSchemeStore.setColorScheme(colorScheme);
   setColorSchemeClass();
 };
 
