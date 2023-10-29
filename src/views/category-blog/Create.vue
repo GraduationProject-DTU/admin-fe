@@ -1,13 +1,13 @@
 <template>
     <div ref="outSideClickNews">
-        <h2 class="intro-y text-lg font-medium mt-4 mb-5" v-if="idUpdateUser == null">Tạo mới</h2>
-        <h2 class="intro-y text-lg font-medium mt-4 mb-5" v-if="idUpdateUser != null">Chỉnh sửa</h2>
+        <h2 class="intro-y text-lg font-medium mt-4 mb-5" v-if="idUpdateBlogCategory == null">Tạo mới</h2>
+        <h2 class="intro-y text-lg font-medium mt-4 mb-5" v-if="idUpdateBlogCategory != null">Chỉnh sửa</h2>
         <div>
             <!-- <div class="col-span-6 sm:col-span-3 xl:col-span-2 flex flex-col justify-end items-center" v-if="loadingIconAction">
                 <LoadingIcon icon="ball-triangle" class="w-20 h-20" />
             </div> -->
             <ModalBody>
-                <Form @submit="createUser" :validation-schema="schema" v-slot="{ errors }" enctype="multipart/form-data">
+                <Form @submit="createBlogCategory" :validation-schema="schema" v-slot="{ errors }" enctype="multipart/form-data">
                     <div class="intro-y mx-auto w-11/12 p-3 box">
                         <div class="flex flex-row justify-center gap-5 pl-5 pr-5 form-create">
                             <div class="w-1/2 create-layout">
@@ -17,15 +17,15 @@
                                     name="title"
                                     class="form-control pr-10 w-full"
                                     :class="{ 'is-invalid': errors.title }"
-                                    placeholder="Nhập tên thương hiệu"
-                                    v-model="brand.title"
+                                    placeholder="Nhập tên Blog Category"
+                                    v-model="blogCategory.title"
                                 />
                                 <div class="invalid-feedback">{{ errors.title }}</div>
                             </div>
                         </div>
                         <div class="intro-x mt-4 mx-auto text-center">
-                            <button class="btn btn-secondary w-24 mr-4 mb-2" type="button" @click="gotoListBrands">Hủy</button>
-                            <button class="btn btn-primary w-24 mb-2" type="submit" v-if="idUpdateUser == null">Thêm</button>
+                            <button class="btn btn-secondary w-24 mr-4 mb-2" type="button" @click="gotoListBlogCategory">Hủy</button>
+                            <button class="btn btn-primary w-24 mb-2" type="submit" v-if="idUpdateBlogCategory == null">Thêm</button>
                             <button class="btn btn-primary w-24 mb-2" type="submit" v-else>Cập nhật</button>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
 <script>
 import Toastify from 'toastify-js'
 import { Form, Field } from 'vee-validate'
-import BrandApi from '../../api-services/BrandApi'
+import CategoryBlogApi from '../../api-services/CategoryBlogApi'
 import * as Yup from 'yup'
 export default {
     components: { Field, Form },
@@ -62,25 +62,24 @@ export default {
         return {
             schema,
             loadingIconAction: true,
-            brand: {
+            blogCategory: {
                 title : "",
 
             },
-            idUpdateUser: ''
+            idUpdateBlogCategory: ''
         }
     },
     created() {
-        this.idUpdateUser = new URLSearchParams(window.location.search).get('id')
-        if(this.idUpdateUser != null) {
-            this.getBrandById()
+        this.idUpdateBlogCategory = new URLSearchParams(window.location.search).get('id')
+        if(this.idUpdateBlogCategory != null) {
+            this.getCategoryBlogById()
         }
     },
     methods: {
-        async createUser() {
-            if(this.idUpdateUser == null || this.idUpdateUser ==  '') {
+        async createBlogCategory() {
+            if(this.idUpdateBlogCategory == null || this.idUpdateBlogCategory ==  '') {
                 try {
-                    const res = await BrandApi.create(this.brand)
-                    console.log(res);
+                    const res = await CategoryBlogApi.createCategoryBlog(this.blogCategory)
                     Toastify({
                         node: dom('#success-notification-content').clone().removeClass('hidden')[0],
                         duration: 3000,
@@ -90,7 +89,7 @@ export default {
                         position: 'right',
                         stopOnFocus: true
                     }).showToast()
-                    this.gotoListBrands()
+                    this.gotoListBlogCategory()
                 } catch (error) {
                     Toastify({
                         node: dom('#false-notification-content').clone().removeClass('hidden')[0],
@@ -104,7 +103,7 @@ export default {
                 }
             } else {
                 try {
-                    await BrandApi.updateBrand(this.idUpdateUser, this.brand)
+                    await CategoryBlogApi.updateCategoryBlog(this.idUpdateBlogCategory, this.blogCategory)
                     Toastify({
                         node: dom('#success-notification-content').clone().removeClass('hidden')[0],
                         duration: 3000,
@@ -114,7 +113,7 @@ export default {
                         position: 'right',
                         stopOnFocus: true
                     }).showToast()
-                    this.gotoListBrands()
+                    this.gotoListBlogCategory()
                 } catch (error) {
                     Toastify({
                         node: dom('#false-notification-content').clone().removeClass('hidden')[0],
@@ -129,13 +128,13 @@ export default {
             }
 
         },
-        async getBrandById() {
+        async getCategoryBlogById() {
             this.schema = null
-            const res = await BrandApi.getBrandById(this.idUpdateUser)
-            this.brand = res.brand
+            const res = await CategoryBlogApi.getCategoryBlogById(this.idUpdateBlogCategory)
+            this.blogCategory = res.category
         },
-        gotoListBrands() {
-            this.$router.push({ path: '/brand/list' })
+        gotoListBlogCategory() {
+            this.$router.push({ path: '/category-blog/list' })
         }
     }
 }

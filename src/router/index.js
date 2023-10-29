@@ -5,7 +5,13 @@ import CreateUser from '../views/user/Create.vue'
 import ListBrand from '../views/brand/List.vue'
 import CreateBrand from '../views/brand/Create.vue'
 import ListProduct from '../views/product/List.vue'
+import CreateCategoryProduct from '../views/category-products/Create.vue'
+import ListCategoryProduct from '../views/category-products/List.vue'
 import CreateProduct from '../views/product/Create.vue'
+import CreateCategoryBlog from '../views/category-blog/Create.vue'
+import ListCategoryBlog from '../views/category-blog/List.vue'
+import CreateBlog from '../views/blog/Create.vue'
+import ListBlog from '../views/blog/List.vue'
 import DashboardOverview from '../views/dashboard-overview/Main.vue'
 import Login from '../views/auth/Login.vue'
 import ErrorPage from '../views/error-page/Main.vue'
@@ -50,6 +56,36 @@ const routes = [
                 path: '/product/create',
                 name: 'product-create',
                 component: CreateProduct
+            },
+            {
+                path: '/category-product/list',
+                name: 'category-product-list',
+                component: ListCategoryProduct
+            },
+            {
+                path: '/category-product/create',
+                name: 'category-product-create',
+                component: CreateCategoryProduct
+            },
+            {
+                path: '/category-blog/list',
+                name: 'category-blog-list',
+                component: ListCategoryBlog
+            },
+            {
+                path: '/category-blog/create',
+                name: 'category-blog-create',
+                component: CreateCategoryBlog
+            },
+            {
+                path: '/blog/list',
+                name: 'blog-list',
+                component: ListBlog
+            },
+            {
+                path: '/blog/create',
+                name: 'blog-create',
+                component: CreateBlog
             }
         ]
     },

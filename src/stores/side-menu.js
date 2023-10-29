@@ -65,6 +65,57 @@ export const useSideMenuStore = defineStore('sideMenu', {
                         title: 'Create Product'
                     }
                 ]
+            },
+            {
+                icon: 'FolderIcon',
+                pageName: 'category-product',
+                title: 'Category Product',
+                subMenu: [
+                    {
+                        icon: 'ListIcon',
+                        pageName: 'category-product-list',
+                        title: 'List Category Product'
+                    },
+                    {
+                        icon: 'PlusSquareIcon',
+                        pageName: 'category-product-create',
+                        title: 'Create Category Product'
+                    }
+                ]
+            },
+            {
+                icon: 'BriefcaseIcon',
+                pageName: 'category-blog',
+                title: 'Category Blog',
+                subMenu: [
+                    {
+                        icon: 'ListIcon',
+                        pageName: 'category-blog-list',
+                        title: 'List Category Blog'
+                    },
+                    {
+                        icon: 'PlusSquareIcon',
+                        pageName: 'category-blog-create',
+                        title: 'Create Category Blog'
+                    }
+                ]
+            },
+            {
+                icon: 'BookOpenIcon',
+                pageName: 'blog',
+                title: 'Blog',
+                subMenu: [
+                    {
+                        icon: 'ListIcon',
+                        pageName: 'blog-list',
+                        title: 'List Blog'
+                    },
+                    {
+                        icon: 'PlusSquareIcon',
+                        pageName: 'blog-create',
+                        title: 'Create Blog'
+                    }
+                ]
             }
         ]
     })

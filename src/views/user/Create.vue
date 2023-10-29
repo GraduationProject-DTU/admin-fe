@@ -118,7 +118,7 @@
         <div id="false-notification-content" class="toastify-content toastify-content-update hidden flex">
             <CheckCircleIcon class="text-danger" />
             <div class="ml-1 mr-2 message-toast">
-                <div class="text-slate-500">Có lỗi trong quá trình tạo tài khoản !</div>
+                <div class="text-slate-500">Có lỗi trong quá trình tạo !</div>
             </div>
         </div>
     </div>
