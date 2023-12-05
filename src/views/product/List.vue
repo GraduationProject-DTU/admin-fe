@@ -8,7 +8,7 @@
             <div class="intro-y col-span-12 flex flex-wrap xl:flex-nowrap items-center mt-2">
                 <button class="btn btn-primary shadow-md mr-2" @click="createProduct">Thêm</button>
             </div>
-            <div v-for="(item, index) in listProduct" :key="index" class="intro-y col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <div v-for="(item, index) in dataPage" :key="index" class="intro-y col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
                 <div class="box">
                     <div class="p-5">
                         <div
@@ -50,6 +50,20 @@
             </div>
         </div>
     </div>
+    <!-- BEGIN: Pagination -->
+    <div class="intro-y col-span-12 flex flex-wrap sm:flex-row sm:flex-nowrap justify-between mt-3" v-if="totalPages > 1">
+        <pagination :totalPages="totalPages" :perPage="perPage" :currentPage="currentPage" @pagechanged="onPageChange" />
+        <div class="hidden md:block mx-auto lg:col-span-4 text-slate-500">
+            Hiển thị {{ currentPage }} trong {{ perPage }} trang của {{ totalReviewGroup }} phần tử
+        </div>
+        <select v-model="perPage" class="lg:col-span-4 w-20 form-select box mt-3 sm:mt-0">
+            <option value="8">8</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+            <option value="64">64</option>
+        </select>
+    </div>
+    <!-- END: Pagination -->
     <transition name="fade">
         <div id="headlessui-portal-root" v-if="isOpen == true">
             <div data-headlessui-portal="">
@@ -136,26 +150,50 @@
 <script>
 import Toastify from 'toastify-js'
 import ProductApi from '../../api-services/ProductApi'
+import Pagination from '../../components/pagination/pagination.vue'
 
 export default {
+    components: {
+        Pagination
+    },
     data() {
         return {
             listProduct: [],
             loadingIconAction: true,
             isOpen: false,
-            idDel: null
+            idDel: null,
+            perPage: 8,
+            currentPage: 1,
+            totalPages: 0,
+            result: {},
+            dataPage: {},
         }
     },
     created() {
         this.getListProduct()
+    },
+    watch: {
+        perPage: function () {
+            this.dataPage = this.paginate(this.result, this.perPage, this.currentPage)
+        }
     },
     methods: {
         async getListProduct() {
             this.loadingIconAction = true
             const res = await ProductApi.getAllProduct()
             this.listProduct = res.mess
-            console.log(this.listProduct);
+            this.result = res.mess
+
+            this.totalPages = Math.ceil(this.result.length / this.perPage)
+            this.dataPage = this.paginate(this.result, this.perPage, 1)
             this.loadingIconAction = false
+        },
+        onPageChange(page) {
+            this.dataPage = this.paginate(this.result, this.perPage, page)
+            this.currentPage = page
+        },
+        paginate(array, page_size, page_number) {
+            return array.slice((page_number - 1) * page_size, page_number * page_size)
         },
         onToggle(id) {
             this.idDel = id

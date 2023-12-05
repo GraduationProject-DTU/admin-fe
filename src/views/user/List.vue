@@ -20,7 +20,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="intro-x" v-for="(item, index) in listUser" :key="index" :value="index">
+                        <tr class="intro-x" v-for="(item, index) in dataPage" :key="index" :value="index">
                             <td>{{ index + 1 }}</td>
                             <td>{{ item.lastname + ' ' +  item.firstname}}</td>
                             <td>{{ item.email }}</td>
@@ -54,6 +54,20 @@
             </div>
         </div>
     </div>
+    <!-- BEGIN: Pagination -->
+    <div class="intro-y col-span-12 flex flex-wrap sm:flex-row sm:flex-nowrap justify-between mt-3" v-if="totalPages >= 1">
+        <pagination :totalPages="totalPages" :perPage="perPage" :currentPage="currentPage" @pagechanged="onPageChange" />
+        <div class="hidden md:block mx-auto lg:col-span-4 text-slate-500">
+            Hiển thị {{ currentPage }} trong {{ perPage }} trang của {{ totalReviewGroup }} phần tử
+        </div>
+        <select v-model="perPage" class="lg:col-span-4 w-20 form-select box mt-3 sm:mt-0">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="35">35</option>
+            <option value="50">50</option>
+        </select>
+    </div>
+    <!-- END: Pagination -->
     <transition name="fade">
         <div id="headlessui-portal-root" v-if="isOpen == true">
             <div data-headlessui-portal="">
@@ -140,11 +154,20 @@
 <script>
 import Toastify from 'toastify-js'
 import UserApi from '../../api-services/UserApi'
+import Pagination from '../../components/pagination/pagination.vue'
 
 export default {
+    components: {
+        Pagination
+    },
     data() {
         return {
             listUser: [],
+            perPage: 10,
+            currentPage: 1,
+            totalPages: 0,
+            result: {},
+            dataPage: {},
             loadingIconAction: true,
             isOpen: false,
             idDel: null
@@ -153,11 +176,25 @@ export default {
     created() {
         this.getListUser()
     },
+    watch: {
+        perPage: function () {
+            this.dataPage = this.paginate(this.result, this.perPage, this.currentPage)
+        }
+    },
     methods: {
+        onPageChange(page) {
+            this.dataPage = this.paginate(this.result, this.perPage, page)
+            this.currentPage = page
+        },
+        paginate(array, page_size, page_number) {
+            return array.slice((page_number - 1) * page_size, page_number * page_size)
+        },
         async getListUser() {
             this.loadingIconAction = true
             const res = await UserApi.getAllUsers()
-            console.log(res);
+            this.result = res.users
+            this.totalPages = Math.ceil(this.result.length / this.perPage)
+            this.dataPage = this.paginate(this.result, this.perPage, 1)
             this.listUser = res.users
             this.loadingIconAction = false
         },

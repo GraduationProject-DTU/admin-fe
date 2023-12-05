@@ -8,7 +8,7 @@
             <div class="intro-y col-span-12 flex flex-wrap xl:flex-nowrap items-center mt-2">
                 <button class="btn btn-primary shadow-md mr-2" @click="createBlog">Thêm</button>
             </div>
-            <div v-for="(item, key) in listBlog" :key="key" class="intro-y col-span-12 md:col-span-6 box">
+            <div v-for="(item, key) in dataPage" :key="key" class="intro-y col-span-12 md:col-span-6 box">
                 <div
                     class="h-[320px] before:block before:absolute before:w-full before:h-full before:top-0 before:left-0 before:z-10 before:bg-gradient-to-t before:from-black/90 before:to-black/10 image-fit"
                 >
@@ -40,16 +40,14 @@
                     </div>
                     <div class="absolute bottom-0 text-white px-5 pb-6 z-10">
                         <span class="bg-white/20 px-2 py-1 rounded">{{
-                            item.category
+                            item.category.title
                         }}</span>
-                        <a href="" class="block font-medium text-xl mt-3">{{
+                        <!-- <a href="" class="block font-medium text-xl mt-3">{{
                             item.title
-                        }}</a>
+                        }}</a> -->
                     </div>
                 </div>
-                <div class="p-5 text-slate-600 dark:text-slate-500">
-                    {{ item.description }}
-                </div>
+                <div class="p-5 text-slate-600 dark:text-slate-500 font-bold text-lg">{{item.title}}</div>
                 <div class="flex items-center px-5 py-3 border-t border-slate-200/60 dark:border-darkmode-400">
                     <Tippy
                         tag="a"
@@ -156,6 +154,20 @@
             </div>
         </div>
     </div>
+    <!-- BEGIN: Pagination -->
+    <div class="intro-y col-span-12 flex flex-wrap sm:flex-row sm:flex-nowrap justify-between mt-3" v-if="totalPages > 1">
+        <pagination :totalPages="totalPages" :perPage="perPage" :currentPage="currentPage" @pagechanged="onPageChange" />
+        <div class="hidden md:block mx-auto lg:col-span-4 text-slate-500">
+            Hiển thị {{ currentPage }} trong {{ perPage }} trang của {{ totalReviewGroup }} phần tử
+        </div>
+        <select v-model="perPage" class="lg:col-span-4 w-20 form-select box mt-3 sm:mt-0">
+            <option value="4">4</option>
+            <option value="8">8</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+        </select>
+    </div>
+    <!-- END: Pagination -->
     <transition name="fade">
         <div id="headlessui-portal-root" v-if="isOpen == true">
             <div data-headlessui-portal="">
@@ -244,11 +256,12 @@
 import Toastify from 'toastify-js'
 import BlogApi from '../../api-services/BlogApi'
 import { format, formatDistanceToNow } from 'date-fns';
+import Pagination from '../../components/pagination/pagination.vue'
 import Icon from "../../components/icon/Main.vue"
 
 export default {
     components: {
-        Icon
+        Icon, Pagination
     },
     data() {
         return {
@@ -257,17 +270,39 @@ export default {
             isOpen: false,
             idDel: null,
             heightModal: 0,
+            perPage: 4,
+            currentPage: 1,
+            totalPages: 0,
+            result: {},
+            dataPage: {},
             isPostComment: false
         }
     },
     created() {
         this.getlistBlog()
     },
+    watch: {
+        perPage: function () {
+            this.dataPage = this.paginate(this.result, this.perPage, this.currentPage)
+        }
+    },
     methods: {
+        onPageChange(page) {
+            this.dataPage = this.paginate(this.result, this.perPage, page)
+            this.currentPage = page
+        },
+        paginate(array, page_size, page_number) {
+            return array.slice((page_number - 1) * page_size, page_number * page_size)
+        },
+
         async getlistBlog() {
             this.loadingIconAction = true
             const res = await BlogApi.getAllBlog()
-            this.listBlog = res.blog;
+            this.result = res.blogs
+            console.log(res);
+            this.totalPages = Math.ceil(this.result.length / this.perPage)
+            this.dataPage = this.paginate(this.result, this.perPage, 1)
+            this.listBlog = res.blogs;
             this.loadingIconAction = false
         },
         addEmoji(item, emoji) {
@@ -307,6 +342,9 @@ export default {
                 formattedDate = format(yourDate, 'dd/MM/yyyy') + ' ' + formatDistanceToNow(yourDate, { addSuffix: true });
             }
             return formattedDate
+        },
+        gotoBlogDetail(id) {
+            this.$router.push({ path: '/blog/detail', query: { id: id } })
         },
         async deleteBlog() {
             this.loadingIconAction = true

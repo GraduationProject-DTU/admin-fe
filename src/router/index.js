@@ -12,6 +12,7 @@ import CreateCategoryBlog from '../views/category-blog/Create.vue'
 import ListCategoryBlog from '../views/category-blog/List.vue'
 import CreateBlog from '../views/blog/Create.vue'
 import ListBlog from '../views/blog/List.vue'
+import DetailBlog from '../views/blog/Detail.vue'
 import DashboardOverview from '../views/dashboard-overview/Main.vue'
 import Login from '../views/auth/Login.vue'
 import ErrorPage from '../views/error-page/Main.vue'
@@ -86,6 +87,11 @@ const routes = [
                 path: '/blog/create',
                 name: 'blog-create',
                 component: CreateBlog
+            },
+            {
+                path: '/blog/detail',
+                name: 'blog-detail',
+                component: DetailBlog
             }
         ]
     },
