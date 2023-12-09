@@ -5,12 +5,24 @@
             <LoadingIcon icon="ball-triangle" class="w-20 h-20" />
         </div>
         <div class="grid grid-cols-12 gap-6 mt-5" v-if="!loadingIconAction">
-            <div class="intro-y col-span-12 flex flex-wrap xl:flex-nowrap items-center mt-2">
-                <button class="btn btn-primary shadow-md mr-2" @click="createProduct">Thêm</button>
+            <div class="col-span-12 flex">
+                <div class="intro-y col-span-12 flex flex-wrap xl:flex-nowrap items-center mt-2">
+                    <button class="btn btn-primary shadow-md mr-2" @click="createProduct">Thêm</button>
+                </div>
+                <div class="intro-y col-span-12 flex flex-wrap xl:flex-nowrap items-center mt-2">
+                    <button class="btn btn-primary shadow-md mr-2" @click="createOrder">Tạo đơn hàng</button>
+                </div>
             </div>
             <div v-for="(item, index) in dataPage" :key="index" class="intro-y col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
                 <div class="box">
-                    <div class="p-5">
+                    <div class="flex justify-end">
+                        <input
+                            class="form-check-input mt-2 mr-2"
+                            type="checkbox"
+                            @click="selectProducts(item._id, item.title, item.image, item.price)"
+                        />
+                    </div>
+                    <div class="p-5 pt-2">
                         <div
                             class="h-40 2xl:h-56 image-fit rounded-md overflow-hidden before:block before:absolute before:w-full before:h-full before:top-0 before:left-0 before:z-10 before:bg-gradient-to-t before:from-black before:to-black/10"
                         >
@@ -47,6 +59,18 @@
             <CheckCircleIcon class="text-success" />
             <div class="ml-1 mr-2 message-toast">
                 <div class="text-slate-500">Xóa thành công !</div>
+            </div>
+        </div>
+        <div id="false-create" class="toastify-content toastify-content-update hidden flex">
+            <CheckCircleIcon class="text-danger" />
+            <div class="ml-1 mr-2 message-toast">
+                <div class="text-slate-500">Có lỗi trong quá trình tạo đơn hàng !</div>
+            </div>
+        </div>
+        <div id="success-notification-create" class="toastify-content toastify-content-update hidden flex">
+            <CheckCircleIcon class="text-success" />
+            <div class="ml-1 mr-2 message-toast">
+                <div class="text-slate-500">Tạo đơn hàng thành công !</div>
             </div>
         </div>
     </div>
@@ -146,11 +170,74 @@
             </div>
         </div>
     </transition>
+    <Modal :show="isOpenModal" @hidden="isOpenModal = false" class="closeModal">
+        <ModalHeader>
+            <div>Name: Admin</div>
+        </ModalHeader>
+        <ModalBody class="p-0">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="whitespace-nowrap !py-5">Product</th>
+                        <th class="whitespace-nowrap text-right">Unit Price</th>
+                        <th class="whitespace-nowrap text-right">Qty</th>
+                        <th class="whitespace-nowrap text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, index) in order" :key="index">
+                        <td class="!py-4">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 image-fit zoom-in">
+                                    <Tippy
+                                        tag="img"
+                                        alt="Midone - HTML Admin Template"
+                                        class="rounded-lg border-2 border-white shadow-md tooltip"
+                                        :src="item.image"
+                                    />
+                                </div>
+                                <Tippy
+                                    tag="a"
+                                    href="javascript:;"
+                                    class="tooltip block flex justify-left font-medium w-60 whitespace-nowrap truncate ml-2"
+                                    :content="item.title"
+                                    >{{ item.title }}</Tippy
+                                >
+                            </div>
+                        </td>
+                        <td class="text-right">{{ formatPrice(item.price)}}</td>
+                        <td class="text-right w-16">
+                            <input
+                                class="w-28 disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-darkmode-800/50 dark:disabled:border-transparent [&[readonly]]:bg-slate-100 [&[readonly]]:cursor-not-allowed [&[readonly]]:dark:bg-darkmode-800/50 [&[readonly]]:dark:border-transparent transition duration-200 ease-in-out text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary focus:border-opacity-40 dark:bg-darkmode-800 dark:border-transparent dark:focus:ring-slate-700 dark:focus:ring-opacity-50 dark:placeholder:text-slate-500/80 w-full"
+                                type="number"
+                                v-model="item.quatity"
+                                @change="handleChange($event, item.price)"
+                            />
+                        </td>
+                        <td class="text-right">{{ formatPrice(Number(item.price) * Number(item.quatity))}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <ModalFooter class="w-full">
+                <div class="flex justify-end items-center">
+                    <div class="text-right mr-5 mt-5 text-lg flex justify-end"></div>
+                    <div class="text-right mr-5 mt-5 font-bold text-lg">Total: {{ formatPrice(totalPrice) }}</div>
+                </div>
+                <div class="flex justify-end items-center">
+                    <div class="text-right mr-5 mt-5 text-lg flex justify-end">
+                        <div class="bg-danger/20 text-danger rounded px-4 ml-1 py-2 cursor-pointer" @click="isOpenModal = false">Hủy</div>
+                        <div class="bg-success/20 text-success rounded px-4 ml-1 py-2 cursor-pointer" @click="createOrderNew()">Tạo đơn hàng</div>
+                    </div>
+                </div>
+            </ModalFooter>
+        </ModalBody>
+    </Modal>
 </template>
 <script>
 import Toastify from 'toastify-js'
 import ProductApi from '../../api-services/ProductApi'
 import Pagination from '../../components/pagination/pagination.vue'
+import OrderApi from '../../api-services/OrderApi'
 
 export default {
     components: {
@@ -167,6 +254,9 @@ export default {
             totalPages: 0,
             result: {},
             dataPage: {},
+            order: [],
+            isOpenModal: false,
+            totalPrice: 0
         }
     },
     created() {
@@ -183,7 +273,6 @@ export default {
             const res = await ProductApi.getAllProduct()
             this.listProduct = res.mess
             this.result = res.mess
-
             this.totalPages = Math.ceil(this.result.length / this.perPage)
             this.dataPage = this.paginate(this.result, this.perPage, 1)
             this.loadingIconAction = false
@@ -201,6 +290,69 @@ export default {
         },
         closeModal() {
             this.isOpen = !this.isOpen
+        },
+        closeModalCreate() {
+            this.isOpenModal = !this.isOpenModal
+        },
+        createOrder() {
+            this.isOpenModal = !this.isOpenModal
+        },
+        handleChange(event, price) {
+            this.totalPrice += price
+        },
+        selectProducts(id, title, image, price) {
+            const obj = {
+                pid: id,
+                title: title,
+                image: image,
+                price: price,
+                quatity: 1,
+                total: price
+            }
+            this.order.push(obj)
+            this.order.map((item, index) => {
+                this.totalPrice += price
+            })
+
+        },
+        async createOrderNew () {
+            let params = []
+            this.order.map((item, index) => {
+                const obj = {
+                    pid: item.pid,
+                    quatity: item.quatity
+                }
+                params.push(obj)
+            })
+            const res = await OrderApi.createOrder(params)
+            if (res.mess !== 'Create successfully') {
+                Toastify({
+                    node: dom('#false-create').clone().removeClass('hidden')[0],
+                    duration: 3000,
+                    newWindow: true,
+                    close: true,
+                    gravity: 'top',
+                    position: 'right',
+                    stopOnFocus: true
+                }).showToast()
+            } else {
+                this.loadingIconAction = false
+                Toastify({
+                    node: dom('#success-notification-create').clone().removeClass('hidden')[0],
+                    duration: 3000,
+                    newWindow: true,
+                    close: true,
+                    gravity: 'top',
+                    position: 'right',
+                    stopOnFocus: true
+                }).showToast()
+                this.getListProduct()
+            }
+            this.isOpenModal = !this.isOpenModal
+        },
+        formatPrice(price) {
+            console.log();
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
         },
         async deleteProduct() {
             this.loadingIconAction = true
@@ -267,5 +419,8 @@ export default {
 .toastify .toastify-content .text-danger {
     margin-right: -10px;
     width: 65px;
+}
+.closeModal .modal-dialog {
+    width: 800px !important;
 }
 </style>

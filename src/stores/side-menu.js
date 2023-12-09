@@ -116,6 +116,23 @@ export const useSideMenuStore = defineStore('sideMenu', {
                         title: 'Create Blog'
                     }
                 ]
+            },
+            {
+                icon: 'ArchiveIcon',
+                pageName: 'orders',
+                title: 'Order',
+                subMenu: [
+                    {
+                        icon: 'ListIcon',
+                        pageName: 'order-list',
+                        title: 'List Order'
+                    },
+                    {
+                        icon: 'PlusSquareIcon',
+                        pageName: 'product-list',
+                        title: 'Create Order'
+                    }
+                ]
             }
         ]
     })

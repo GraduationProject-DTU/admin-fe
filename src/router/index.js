@@ -13,6 +13,8 @@ import ListCategoryBlog from '../views/category-blog/List.vue'
 import CreateBlog from '../views/blog/Create.vue'
 import ListBlog from '../views/blog/List.vue'
 import DetailBlog from '../views/blog/Detail.vue'
+import ListOrder from '../views/orders/List.vue'
+import OrderDetail from '../views/orders/OrderDetail.vue'
 import DashboardOverview from '../views/dashboard-overview/Main.vue'
 import Login from '../views/auth/Login.vue'
 import ErrorPage from '../views/error-page/Main.vue'
@@ -92,6 +94,16 @@ const routes = [
                 path: '/blog/detail',
                 name: 'blog-detail',
                 component: DetailBlog
+            },
+            {
+                path: '/order/list',
+                name: 'order-list',
+                component: ListOrder
+            },
+            {
+                path: '/order/detail',
+                name: 'order-detail',
+                component: OrderDetail
             }
         ]
     },

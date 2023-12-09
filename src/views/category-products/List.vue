@@ -189,7 +189,6 @@ export default {
             this.loadingIconAction = true
             const res = await CategoryProductApi.getAllCategoryProduct()
             this.result = res.category
-
             this.totalPages = Math.ceil(this.result.length / this.perPage)
             this.dataPage = this.paginate(this.result, this.perPage, 1)
             this.listCategoryProduct = res.category
