@@ -35,6 +35,26 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="flex flex-row justify-left gap-5 pl-5 pr-5 form-create">
+                            <div class="w-1/2 create-layout">
+                                <label for="regular-form-1" class="form-label text-base">Danh mục:</label>
+                                <Field
+                                    as="select"
+                                    name="category"
+                                    class="form-select"
+                                    v-model="product.category"
+                                    :class="{ 'is-invalid': errors.category}"
+                                >
+                                    <option v-for="(item, index) in listCategoryProduct" :key="index" :value="item._id">
+                                        {{ item.title }}
+                                    </option>
+                                </Field>
+
+                                <div class="invalid-feedback">
+                                    {{ errors.category}}
+                                </div>
+                            </div>
+                        </div>
                         <div class="flex flex-row justify-center gap-5 pl-5 pr-5 mt-5 form-create">
                             <div class="w-full create-layout">
                                 <label for="regular-form-1" class="form-label text-base">Mô tả</label>
@@ -137,6 +157,7 @@ import Toastify from 'toastify-js'
 import { Form, Field } from 'vee-validate'
 import ProductApi from '../../api-services/ProductApi'
 import BrandApi from '../../api-services/BrandApi'
+import CategoryProductApi from '../../api-services/CategoryProductApi'
 import * as Yup from 'yup'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import CKEditor from '@ckeditor/ckeditor5-vue'
@@ -149,7 +170,8 @@ export default {
             description: Yup.string().required('Vui lòng nhập mô tả.'),
             brand: Yup.string().required('Vui lòng chọn thương hiệu.'),
             price: Yup.string().required('Vui lòng nhập giá.'),
-            quantity: Yup.string().required('Vui lòng nhập số lượng.')
+            quantity: Yup.string().required('Vui lòng nhập số lượng.'),
+            category: Yup.string().required('Vui lòng chọn danh mục.')
         })
         return {
             editor: ClassicEditor,
@@ -170,12 +192,15 @@ export default {
                 brand: '',
                 price: '',
                 quantity: '',
+                category: '',
                 image:''
-            }
+            },
+            listCategoryProduct: []
         }
     },
     created() {
         this.getListBrand()
+        this.getListBlogCategory()
         this.idUpdateProduct = new URLSearchParams(window.location.search).get('id')
         if(this.idUpdateProduct != null) {
             this.getProductById()
@@ -196,6 +221,7 @@ export default {
                     formData.append('description', this.product.description)
                     formData.append('quantity', this.product.quantity)
                     formData.append('price', this.product.price)
+                    formData.append('category', this.product.category)
                     this.loadingIconAction = true
                     await ProductApi.create(formData)
                     Toastify({
@@ -283,6 +309,11 @@ export default {
             this.checkFile = 2
             this.url = res.product.image
             this.loadingIconAction = false
+        },
+        async getListBlogCategory() {
+            const res = await CategoryProductApi.getAllCategoryProduct()
+            this.listCategoryProduct = res.category
+
         },
         validateImage() {
             let file = this.$refs.uploadImage.files[0]

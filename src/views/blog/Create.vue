@@ -137,7 +137,7 @@ export default {
         const schema = Yup.object().shape({
             title: Yup.string().required('Vui lòng tiêu đề.'),
             description: Yup.string().required('Vui lòng nhập mô tả.'),
-            category: Yup.string().required('Vui lòng chọn thương hiệu.')
+            category: Yup.string().required('Vui lòng chọn danh mục.')
         })
         return {
             editor: ClassicEditor,
