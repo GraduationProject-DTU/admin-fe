@@ -14,6 +14,9 @@ import CreateBlog from '../views/blog/Create.vue'
 import ListBlog from '../views/blog/List.vue'
 import DetailBlog from '../views/blog/Detail.vue'
 import ListOrder from '../views/orders/List.vue'
+import ListCoupons from '../views/coupons/List.vue'
+import CreateCoupons from '../views/coupons/Create.vue'
+import ApplyCoupons from '../views/coupons/ApplyCoupons.vue'
 import OrderDetail from '../views/orders/OrderDetail.vue'
 import DashboardOverview from '../views/dashboard-overview/Main.vue'
 import Login from '../views/auth/Login.vue'
@@ -104,6 +107,21 @@ const routes = [
                 path: '/order/detail',
                 name: 'order-detail',
                 component: OrderDetail
+            },
+            {
+                path: '/coupons/list',
+                name: 'coupons-list',
+                component: ListCoupons
+            },
+            {
+                path: '/coupons/create',
+                name: 'coupons-create',
+                component: CreateCoupons
+            },
+            {
+                path: '/coupons/apply-coupons',
+                name: 'apply-coupons',
+                component: ApplyCoupons
             }
         ]
     },

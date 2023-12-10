@@ -31,7 +31,7 @@
                                     v-model="blog.category"
                                     :class="{ 'is-invalid': errors.category }"
                                 >
-                                    <option v-for="(item, index) in listCategoryBlog" :key="index" :value="item.title">
+                                    <option v-for="(item, index) in listCategoryBlog" :key="index" :value="item._id">
                                         {{ item.title }}
                                     </option>
                                 </Field>
@@ -155,7 +155,7 @@ export default {
                 title: '',
                 description: '',
                 category: '',
-                image:''
+                image:'',
             },
             listUrl: [],
             listImage: []

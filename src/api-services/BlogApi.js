@@ -11,13 +11,16 @@ class BlogApi extends BaseApi {
         return this.delete('blogs/delete-blog/' + params)
     }
     getBlogById(params = {}) {
-        return this.get('blogs/blog/' + params)
+        return this.get('blogs/get-view/' + params)
     }
     updateProductBlog(id, params = {}) {
         return this.updateFormData('blogs/update-blog/' + id, params)
     }
     commentBlog(params = {}) {
         return this.post('blogs/comment-blog', params)
+    }
+    deleteComment(params = {}) {
+        return this.post('blogs/delete-comment-blog', params)
     }
 }
 export default new BlogApi()

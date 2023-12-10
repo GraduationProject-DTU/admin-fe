@@ -86,6 +86,7 @@
                             />
                         </div>
                     </div> -->
+                    <button class="btn btn-secondary ml-auto" @click="viewDetail(item._id)">View Details</button>
                     <Tippy
                         tag="a"
                         href=""
@@ -343,7 +344,7 @@ export default {
             }
             return formattedDate
         },
-        gotoBlogDetail(id) {
+        viewDetail(id) {
             this.$router.push({ path: '/blog/detail', query: { id: id } })
         },
         async deleteBlog() {

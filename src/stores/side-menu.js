@@ -118,7 +118,7 @@ export const useSideMenuStore = defineStore('sideMenu', {
                 ]
             },
             {
-                icon: 'ArchiveIcon',
+                icon: 'ShoppingCartIcon',
                 pageName: 'orders',
                 title: 'Order',
                 subMenu: [
@@ -131,6 +131,28 @@ export const useSideMenuStore = defineStore('sideMenu', {
                         icon: 'PlusSquareIcon',
                         pageName: 'product-list',
                         title: 'Create Order'
+                    }
+                ]
+            },
+            {
+                icon: 'ArchiveIcon',
+                pageName: 'coupons',
+                title: 'Coupons',
+                subMenu: [
+                    {
+                        icon: 'ListIcon',
+                        pageName: 'coupons-list',
+                        title: 'List Coupons'
+                    },
+                    {
+                        icon: 'PlusSquareIcon',
+                        pageName: 'coupons-create',
+                        title: 'Create Coupons'
+                    },
+                    {
+                        icon: 'GitPullRequestIcon',
+                        pageName: 'apply-coupons',
+                        title: 'Apply Coupons'
                     }
                 ]
             }
