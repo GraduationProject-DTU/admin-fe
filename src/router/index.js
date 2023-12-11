@@ -18,6 +18,7 @@ import ListCoupons from '../views/coupons/List.vue'
 import CreateCoupons from '../views/coupons/Create.vue'
 import ApplyCoupons from '../views/coupons/ApplyCoupons.vue'
 import OrderDetail from '../views/orders/OrderDetail.vue'
+import Invoice from '../views/orders/Invoice.vue'
 import DashboardOverview from '../views/dashboard-overview/Main.vue'
 import Login from '../views/auth/Login.vue'
 import ErrorPage from '../views/error-page/Main.vue'
@@ -122,6 +123,11 @@ const routes = [
                 path: '/coupons/apply-coupons',
                 name: 'apply-coupons',
                 component: ApplyCoupons
+            },
+            {
+                path: '/order/invoice',
+                name: 'invoice',
+                component: Invoice
             }
         ]
     },

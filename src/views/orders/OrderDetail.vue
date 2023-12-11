@@ -8,7 +8,11 @@
         <div class="intro-y flex flex-col sm:flex-row items-center mt-8">
             <h2 class="text-lg font-medium mr-auto">Transaction Details</h2>
             <div class="w-full sm:w-auto flex mt-4 sm:mt-0">
-                <button class="btn btn-primary shadow-md mr-2">Print</button>
+                <button class="btn btn-primary shadow-md mr-2" @click="convertToPdf"><FileTextIcon class="w-4 h-4 mr-2" /> Export to PDF</button>
+                <div style="display: none;" ref="pdfWrapper">
+                    <Invoice :getIdOrder="getIdOrder"></Invoice>
+                    <br />
+                </div>
                 <Dropdown class="ml-auto sm:ml-0">
                     <DropdownToggle class="btn px-2 box">
                         <span class="w-5 h-5 flex items-center justify-center">
@@ -228,9 +232,14 @@
     </div>
 </template>
 <script>
+import html2pdf from 'html2pdf.js';
 import Toastify from 'toastify-js'
 import OrderApi from '../../api-services/OrderApi'
+import Invoice from '../orders/Invoice.vue'
 export default {
+    components: {
+        Invoice
+    },
     data() {
         return {
             order: [],
@@ -307,6 +316,26 @@ export default {
                 await this.getOrderById()
             }
             this.confirmationModal = false
+        },
+        async convertToPdf() {
+            const content = this.$refs.pdfWrapper.innerHTML;
+            console.log("hehe");
+            const options = {
+                margin: 10,
+                filename: "Invoice.PDF",
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            };
+
+            await html2pdf().set(options).from(content).toPdf().output('blob').then((data) => {
+                const pdfBlob = new Blob([data], { type: 'application/pdf' });
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                const link = document.createElement('a');
+                link.href = pdfUrl;
+                link.download = "Invoice.PDF";
+                link.click();
+            })
         },
         backToList() {
             this.$router.push({path: '/order/list'})
