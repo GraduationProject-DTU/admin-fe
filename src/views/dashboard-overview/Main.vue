@@ -1,5 +1,8 @@
 <template>
-    <div class="grid grid-cols-12 gap-6">
+    <div class="col-span-6 sm:col-span-3 xl:col-span-2 flex flex-col justify-end items-center" v-if="loadingIconAction">
+        <LoadingIcon icon="ball-triangle" class="w-20 h-20" />
+    </div>
+    <div class="grid grid-cols-12 gap-6" v-else>
         <div class="col-span-12 2xl:col-span-9">
             <div class="grid grid-cols-12 gap-6">
                 <!-- BEGIN: General Report -->
@@ -17,11 +20,13 @@
                                         <div class="ml-auto">
                                             <Tippy
                                                 tag="div"
-                                                class="report-box__indicator bg-success cursor-pointer"
-                                                content="33% Higher than last month"
+                                                class="report-box__indicator cursor-pointer"
+                                                :class="{'bg-success' : checkItemSalse() > 0, 'bg-danger' : checkItemSalse() < 0, 'bg-slate-500' : checkItemSalse() == 0, }"
+                                                :content="percentItemSales"
                                             >
-                                                33%
-                                                <ChevronUpIcon class="w-4 h-4 ml-0.5" />
+                                                {{checkItemSalse()}}% <ChevronUpIcon class="w-4 h-4 ml-0.5" v-if="checkItemSalse() > 0" />
+                                                <ChevronRightIcon class="w-4 h-4 ml-0.5" v-if="checkItemSalse() == 0" />
+                                                <ChevronDownIcon class="w-4 h-4 ml-0.5" v-if="checkItemSalse() < 0" />
                                             </Tippy>
                                         </div>
                                     </div>
@@ -38,11 +43,13 @@
                                         <div class="ml-auto">
                                             <Tippy
                                                 tag="div"
-                                                class="report-box__indicator bg-danger cursor-pointer"
-                                                content="2% Lower than last month"
+                                                class="report-box__indicator cursor-pointer"
+                                                :class="{'bg-success' : checkCreateOrder() > 0, 'bg-danger' : checkCreateOrder() < 0, 'bg-slate-500' : checkCreateOrder() == 0, }"
+                                                :content="percentOrder"
                                             >
-                                                2%
-                                                <ChevronDownIcon class="w-4 h-4 ml-0.5" />
+                                                {{checkCreateOrder()}}% <ChevronUpIcon class="w-4 h-4 ml-0.5" v-if="checkCreateOrder() > 0" />
+                                                <ChevronRightIcon class="w-4 h-4 ml-0.5" v-if="checkCreateOrder() == 0" />
+                                                <ChevronDownIcon class="w-4 h-4 ml-0.5" v-if="checkCreateOrder() < 0" />
                                             </Tippy>
                                         </div>
                                     </div>
@@ -59,10 +66,13 @@
                                         <div class="ml-auto">
                                             <Tippy
                                                 tag="div"
-                                                class="report-box__indicator bg-success cursor-pointer"
-                                                content="12% Higher than last month"
+                                                class="report-box__indicator cursor-pointer"
+                                                :class="{'bg-success' : checkCreateProduct() > 0, 'bg-danger' : checkCreateProduct() < 0, 'bg-slate-500' : checkCreateProduct() == 0, }"
+                                                :content="percentProduct"
                                             >
-                                                12% <ChevronUpIcon class="w-4 h-4 ml-0.5" />
+                                                {{checkCreateProduct()}}% <ChevronUpIcon class="w-4 h-4 ml-0.5" v-if="checkCreateProduct() > 0" />
+                                                <ChevronRightIcon class="w-4 h-4 ml-0.5" v-if="checkCreateProduct() == 0" />
+                                                <ChevronDownIcon class="w-4 h-4 ml-0.5" v-if="checkCreateProduct() < 0" />
                                             </Tippy>
                                         </div>
                                     </div>
@@ -79,10 +89,13 @@
                                         <div class="ml-auto">
                                             <Tippy
                                                 tag="div"
-                                                class="report-box__indicator bg-success cursor-pointer"
-                                                content="22% Higher than last month"
+                                                class="report-box__indicator cursor-pointer"
+                                                :class="{'bg-success' : checkCreateUser() > 0, 'bg-danger' : checkCreateUser() < 0, 'bg-slate-500' : checkCreateUser() == 0, }"
+                                                :content="percentUser"
                                             >
-                                                22% <ChevronUpIcon class="w-4 h-4 ml-0.5" />
+                                                {{checkCreateUser()}}% <ChevronUpIcon class="w-4 h-4 ml-0.5" v-if="checkCreateUser() > 0" />
+                                                <ChevronRightIcon class="w-4 h-4 ml-0.5" v-if="checkCreateUser() == 0" />
+                                                <ChevronDownIcon class="w-4 h-4 ml-0.5" v-if="checkCreateUser() < 0" />
                                             </Tippy>
                                         </div>
                                     </div>
@@ -820,6 +833,7 @@ import UserApi from '../../api-services/UserApi'
 export default {
     data() {
         return {
+            loadingIconAction: false,
             listProduct: [],
             listOrder: [],
             listUser: [],
@@ -827,13 +841,17 @@ export default {
             soldProduct: 0,
             totalOrder: 0,
             totalUser: 0,
-            totalBuyers: 0
+            totalBuyers: 0,
+            percentProduct: "",
+            percentUser: "",
+            percentOrder: "",
+            percentItemSales: ""
         }
     },
-    created() {
-        this.getListProduct()
-        this.getListOrders()
-        this.getListUser()
+    async created() {
+        await this.getListProduct()
+        await this.getListOrders()
+        await this.getListUser()
     },
     methods: {
         async getListProduct() {
@@ -867,6 +885,152 @@ export default {
             this.listUser = res.users
             this.totalUser = this.listUser.length
             this.loadingIconAction = false
+        },
+        checkCreateProduct() {
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth() + 1;
+            const lastMonth = currentDate.getMonth();
+
+            const productThisMonth = this.listProduct.filter(product => {
+                const productCreatedAt = new Date(product.createdAt);
+                const productCreatedMonth = productCreatedAt.getMonth() + 1;
+
+                return productCreatedMonth === currentMonth;
+            });
+            const productLastMonth = this.listProduct.filter(product => {
+                const productCreatedAt = new Date(product.createdAt);
+                const productCreatedMonth = productCreatedAt.getMonth() + 1;
+
+                return productCreatedMonth === lastMonth;
+            });
+            const productThisMonthCount = productThisMonth.length;
+            const productLastMonthCount = productLastMonth.length;
+            let percentChange = 0
+            if (productLastMonthCount != 0) {
+                percentChange = ((productThisMonthCount - productLastMonthCount) / productLastMonthCount) * 100;
+            } else if (productLastMonthCount == productThisMonthCount) {
+                percentChange = 0
+            }
+            else {
+                percentChange = 100
+            }
+            if (percentChange == 0) {
+                this.percentProduct = "No change compared to last month";
+            } else {
+
+                this.percentProduct = `${Math.abs(percentChange)}% ${percentChange > 0 ? 'Higher' : 'Lower'} than last month`;
+            }
+            return percentChange;
+        },
+        checkCreateUser () {
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth() + 1;
+            const lastMonth = currentDate.getMonth();
+
+            const usersThisMonth = this.listUser.filter(user => {
+                const userCreatedAt = new Date(user.createdAt);
+                const userCreatedMonth = userCreatedAt.getMonth() + 1;
+
+                return userCreatedMonth === currentMonth;
+            });
+            const usersLastMonth = this.listUser.filter(user => {
+                const userCreatedAt = new Date(user.createdAt);
+                const userCreatedMonth = userCreatedAt.getMonth() + 1;
+
+                return userCreatedMonth === lastMonth;
+            });
+            const usersThisMonthCount = usersThisMonth.length;
+            const usersLastMonthCount = usersLastMonth.length;
+            let percentChange = 0
+            if (usersLastMonthCount != 0) {
+                percentChange = ((usersThisMonthCount - usersLastMonthCount) / usersThisMonthCount) * 100;
+            } else if (usersThisMonthCount == usersLastMonthCount) {
+                percentChange = 0
+            } else {
+                percentChange = 100
+            }
+            if (percentChange == 0) {
+                this.percentUser = "No change compared to last month";
+            } else {
+
+                this.percentUser = `${Math.abs(percentChange)}% ${percentChange > 0 ? 'Higher' : 'Lower'} than last month`;
+            }
+            return percentChange;
+        },
+        checkCreateOrder () {
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth() + 1;
+            const lastMonth = currentDate.getMonth();
+
+            const orderThisMonth = this.listOrder.filter(order => {
+                const orderCreatedAt = new Date(order.createdAt);
+                const orderCreatedMonth = orderCreatedAt.getMonth() + 1;
+
+                return orderCreatedMonth === currentMonth;
+            });
+            const orderLastMonth = this.listOrder.filter(order => {
+                const orderCreatedAt = new Date(order.createdAt);
+                const orderCreatedMonth = orderCreatedAt.getMonth() + 1;
+
+                return orderCreatedMonth === lastMonth;
+            });
+            const orderThisMonthCount = orderThisMonth.length;
+            const orderLastMonthCount = orderLastMonth.length;
+            let percentChange = 0
+            if (orderLastMonthCount != 0) {
+                percentChange = ((orderThisMonthCount - orderLastMonthCount) / orderLastMonthCount) * 100;
+            } else if (orderThisMonthCount == orderLastMonthCount) {
+                percentChange = 0
+            } else {
+                percentChange = 100
+            }
+            if (percentChange == 0) {
+                this.percentOrder = "No change compared to last month";
+            } else {
+
+                this.percentOrder = `${Math.abs(percentChange)}% ${percentChange > 0 ? 'Higher' : 'Lower'} than last month`;
+            }
+            return percentChange;
+        },
+        checkItemSalse() {
+            // Tạo biến để lưu tổng số lượng sản phẩm của từng tháng
+            let quantityThisMonth = 0;
+            let quantityLastMonth = 0;
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth() + 1;
+            const lastMonth = currentDate.getMonth();
+            // Lặp qua mỗi đơn hàng
+            this.listOrder.forEach(order => {
+                const createdAt = new Date(order.createdAt);
+                const orderMonth = createdAt.getMonth(); // Lấy tháng của đơn hàng
+
+                // Lặp qua từng sản phẩm trong đơn hàng
+                order.products.forEach(product => {
+                    const productQuantity = parseInt(product.quatity); // Chuyển đổi quantity sang số nguyên
+
+                    // Kiểm tra xem sản phẩm được đặt trong tháng nào và cộng vào biến tương ứng
+                    if (orderMonth === currentMonth) {
+                        quantityThisMonth += productQuantity;
+                    } else if (orderMonth === lastMonth) {
+                        quantityLastMonth += productQuantity;
+                    }
+                });
+            });
+            let percentChange = 0
+            if (quantityLastMonth != 0) {
+                percentChange = ((quantityThisMonth - quantityLastMonth) / quantityLastMonth) * 100;
+            }else if (quantityLastMonth == quantityThisMonth) {
+                percentChange = 0
+            } else {
+                percentChange = 100
+            }
+            if (percentChange == 0) {
+                this.percentItemSales = "No change compared to last month";
+            } else {
+
+                this.percentItemSales = `${Math.abs(percentChange)}% ${percentChange > 0 ? 'Higher' : 'Lower'} than last month`;
+            }
+            return percentChange
         },
         formatDateTime(date) {
             const originalDateTime = new Date(date);
