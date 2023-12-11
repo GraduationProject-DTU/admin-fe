@@ -1,11 +1,5 @@
 <template>
-  <Chart
-    type="pie"
-    :width="width"
-    :height="height"
-    :data="data"
-    :options="options"
-  />
+    <Chart type="pie" :width="width" :height="height" :data="data" :options="options" />
 </template>
 
 <script setup>
@@ -28,7 +22,7 @@ const props = defineProps({
 const darkMode = computed(() => useDarkModeStore().darkMode);
 const colorScheme = computed(() => useColorSchemeStore().colorScheme);
 
-const chartData = [15, 10, 65];
+const chartData = [25, 10, 55];
 const chartColors = () => [
   colors.pending(0.9),
   colors.warning(0.9),

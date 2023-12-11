@@ -25,7 +25,7 @@
                                             </Tippy>
                                         </div>
                                     </div>
-                                    <div class="text-3xl font-medium leading-8 mt-6">4.710</div>
+                                    <div class="text-3xl font-medium leading-8 mt-6">{{soldProduct}}</div>
                                     <div class="text-base text-slate-500 mt-1">Item Sales</div>
                                 </div>
                             </div>
@@ -46,8 +46,8 @@
                                             </Tippy>
                                         </div>
                                     </div>
-                                    <div class="text-3xl font-medium leading-8 mt-6">3.721</div>
-                                    <div class="text-base text-slate-500 mt-1">New Orders</div>
+                                    <div class="text-3xl font-medium leading-8 mt-6">{{totalOrder}}</div>
+                                    <div class="text-base text-slate-500 mt-1">Total Orders</div>
                                 </div>
                             </div>
                         </div>
@@ -66,7 +66,7 @@
                                             </Tippy>
                                         </div>
                                     </div>
-                                    <div class="text-3xl font-medium leading-8 mt-6">2.149</div>
+                                    <div class="text-3xl font-medium leading-8 mt-6">{{quantityProduct}}</div>
                                     <div class="text-base text-slate-500 mt-1">Total Products</div>
                                 </div>
                             </div>
@@ -86,8 +86,8 @@
                                             </Tippy>
                                         </div>
                                     </div>
-                                    <div class="text-3xl font-medium leading-8 mt-6">152.040</div>
-                                    <div class="text-base text-slate-500 mt-1">Unique Visitor</div>
+                                    <div class="text-3xl font-medium leading-8 mt-6">{{totalUser}}</div>
+                                    <div class="text-base text-slate-500 mt-1">Total User</div>
                                 </div>
                             </div>
                         </div>
@@ -232,23 +232,25 @@
                 <!-- BEGIN: Weekly Best Sellers -->
                 <div class="col-span-12 xl:col-span-4 mt-6">
                     <div class="intro-y flex items-center h-10">
-                        <h2 class="text-lg font-medium truncate mr-5">Weekly Best Sellers</h2>
+                        <h2 class="text-lg font-medium truncate mr-5">Top Buyers Of The Week</h2>
                     </div>
                     <div class="mt-5">
-                        <div v-for="(faker, fakerKey) in $_.take($f(), 4)" :key="fakerKey" class="intro-y">
+                        <div v-for="(item, index) in listOrder" :key="index" class="intro-y">
                             <div class="box px-4 py-4 mb-3 flex items-center zoom-in">
                                 <div class="w-10 h-10 flex-none image-fit rounded-md overflow-hidden">
-                                    <img alt="Midone Tailwind HTML Admin Template" :src="faker.photos[0]" />
+                                    <img alt="Midone Tailwind HTML Admin Template" :src="item.orderBy.avatar" />
                                 </div>
                                 <div class="ml-4 mr-auto">
                                     <div class="font-medium">
-                                        {{ faker.users[0].name }}
+                                        {{ item.orderBy.firstname + " " + item.orderBy.lastname }}
                                     </div>
                                     <div class="text-slate-500 text-xs mt-0.5">
-                                        {{ faker.dates[0] }}
+                                        {{ formatDateTime(item.createdAt) }}
                                     </div>
                                 </div>
-                                <div class="py-1 px-2 rounded-full text-xs bg-success text-white cursor-pointer font-medium">137 Sales</div>
+                                <div class="py-1 px-2 rounded-full text-xs bg-success text-white cursor-pointer font-medium">
+                                    {{item.totalBuyers}} Bought
+                                </div>
                             </div>
                         </div>
                         <a
@@ -474,26 +476,21 @@
                             <h2 class="text-lg font-medium truncate mr-5">Transactions</h2>
                         </div>
                         <div class="mt-5">
-                            <div v-for="(faker, fakerKey) in $_.take($f(), 5)" :key="fakerKey" class="intro-x">
+                            <div v-for="(item, index) in listOrder" :key="index" class="intro-x">
                                 <div class="box px-5 py-3 mb-3 flex items-center zoom-in">
                                     <div class="w-10 h-10 flex-none image-fit rounded-full overflow-hidden">
-                                        <img alt="Midone Tailwind HTML Admin Template" :src="faker.photos[0]" />
+                                        <img alt="Midone Tailwind HTML Admin Template" :src="item?.orderBy?.avatar" />
                                     </div>
                                     <div class="ml-4 mr-auto">
                                         <div class="font-medium">
-                                            {{ faker.users[0].name }}
+                                            {{ item.orderBy.firstname + " " +  item.orderBy.lastname}}
                                         </div>
                                         <div class="text-slate-500 text-xs mt-0.5">
-                                            {{ faker.dates[0] }}
+                                            {{ formatDateTime(item.createdAt) }}
                                         </div>
                                     </div>
-                                    <div
-                                        :class="{
-                      'text-success': faker.trueFalse[0],
-                      'text-danger': !faker.trueFalse[0],
-                    }"
-                                    >
-                                        {{ faker.trueFalse[0] ? "+" : "-" }}${{ faker.totals[0] }}
+                                    <div class="text-success">
+                                        {{ formatPrice(item.total) }}
                                     </div>
                                 </div>
                             </div>
@@ -814,4 +811,72 @@ const nextImportantNotes = () => {
   const el = importantNotesRef.value;
   el.tns.goTo("next");
 };
+</script>
+<script>
+import ProductApi from '../../api-services/ProductApi'
+import OrderApi from '../../api-services/OrderApi'
+import UserApi from '../../api-services/UserApi'
+
+export default {
+    data() {
+        return {
+            listProduct: [],
+            listOrder: [],
+            listUser: [],
+            quantityProduct: 0,
+            soldProduct: 0,
+            totalOrder: 0,
+            totalUser: 0,
+            totalBuyers: 0
+        }
+    },
+    created() {
+        this.getListProduct()
+        this.getListOrders()
+        this.getListUser()
+    },
+    methods: {
+        async getListProduct() {
+            this.loadingIconAction = true
+            const res = await ProductApi.getAllProduct()
+            this.listProduct = res.mess
+            this.listProduct.map((item,index) => {
+                this.quantityProduct += item.quantity;
+                this.soldProduct +=item.sold
+            })
+            this.loadingIconAction = false
+        },
+        async getListOrders () {
+            this.loadingIconAction = true
+            const res = await OrderApi.getListOrders();
+            this.listOrder = res.order
+            this.totalOrder = this.listOrder.length;
+            this.listOrder.map((item,index) => {
+                this.totalBuyers = 0
+                item.products.map((item2,index2) => {
+                    this.totalBuyers += Number(item2.quatity);
+                })
+                item.totalBuyers = this.totalBuyers
+            })
+            this.listOrder.sort((a, b) => b.totalBuyers - a.totalBuyers)
+            this.loadingIconAction = false
+        },
+        async getListUser() {
+            this.loadingIconAction = true
+            const res = await UserApi.getAllUsers()
+            this.listUser = res.users
+            this.totalUser = this.listUser.length
+            this.loadingIconAction = false
+        },
+        formatDateTime(date) {
+            const originalDateTime = new Date(date);
+            const options = { day: 'numeric', month: 'long', hour: 'numeric', minute: 'numeric' };
+            return originalDateTime.toLocaleDateString('en-US', options);
+
+        },
+        formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+        },
+    }
+}
 </script>

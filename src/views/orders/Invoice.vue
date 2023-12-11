@@ -35,7 +35,7 @@
                     <tbody>
                         <tr v-for="(item,index) in order.products" :key="index">
                             <td class="border-b dark:border-darkmode-400">
-                                <div class="font-medium whitespace-nowrap">{{item.product.title}}</div>
+                                <div class="font-medium ">{{item.product.title}}</div>
                             </td>
                             <td class="text-right border-b dark:border-darkmode-400 w-32">{{item.quatity}}</td>
                             <td class="text-right border-b dark:border-darkmode-400 w-32">{{formatPrice(item.product.price)}}</td>

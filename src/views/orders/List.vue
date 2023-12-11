@@ -66,21 +66,21 @@
                             <input class="form-check-input" type="checkbox" />
                         </td>
                         <td class="w-40 !py-4">
-                            <a href="" class="underline decoration-dotted whitespace-nowrap">#{{ item.codeBill }}</a>
+                            <a href="" class="underline decoration-dotted whitespace-nowrap">#{{ item?.codeBill }}</a>
                         </td>
                         <td class="w-40">
                             <a href="" class="font-medium whitespace-nowrap">{{
-                                item.orderBy.firstname + " " + item.orderBy.lastname
+                                item?.orderBy?.firstname + " " + item?.orderBy?.lastname
                             }}</a>
-                            <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">{{item.orderBy.email}}</div>
+                            <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">{{item?.orderBy?.email}}</div>
                         </td>
                         <td class="text-center">
                             <div
                                 class="flex items-center justify-center whitespace-nowrap"
                                 :class="{
-                                    'text-success': item.status == 'Succeeded',
-                                    'text-danger': item.status == 'Cancelled',
-                                    'text-amber-500': item.status == 'Processing',
+                                    'text-success': item?.status == 'Succeeded',
+                                    'text-danger': item?.status == 'Cancelled',
+                                    'text-amber-500': item?.status == 'Processing',
                                     }"
                             >
                                 <CheckSquareIcon class="w-4 h-4 mr-2" />
@@ -91,20 +91,20 @@
                         </td>
                         <td>
                             <div>
-                                <div class="whitespace-nowrap">{{item.payments}}</div>
-                                <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">{{formatDateTime (item.createdAt)}}</div>
+                                <div class="whitespace-nowrap">{{item?.payments}}</div>
+                                <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">{{formatDateTime (item?.createdAt)}}</div>
                             </div>
                         </td>
                         <td class="w-40 text-center">
-                            <div class="pr-16">{{formatPrice(item.total)}}</div>
+                            <div class="pr-16">{{formatPrice(item?.total)}}</div>
                         </td>
                         <td class="table-report__action">
                             <div class="flex flex-col justify-center items-center">
                                 <div class="flex justify-center items-center">
-                                    <a class="flex items-center mr-3 text-primary" href="javascript:;" @click="detailOrder(item._id)">
+                                    <a class="flex items-center mr-3 text-primary" href="javascript:;" @click="detailOrder(item?._id)">
                                         <EditIcon class="w-cutom-icon mr-1" />
                                     </a>
-                                    <a class="flex items-center text-danger" href="javascript:;" @click="onToggle(item._id)">
+                                    <a class="flex items-center text-danger" href="javascript:;" @click="onToggle(item?._id)">
                                         <Trash2Icon class="w-cutom-icon mr-1" />
                                     </a>
                                 </div>
