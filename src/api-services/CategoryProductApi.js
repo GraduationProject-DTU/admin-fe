@@ -16,5 +16,8 @@ class CategoryProductApi extends BaseApi {
     updateCategoryProduct(id, params = {}) {
         return this.put('category-products/update-category/' + id, params)
     }
+    getCategoryStatistic() {
+        return this.post('category-products/statistic')
+    }
 }
 export default new CategoryProductApi()

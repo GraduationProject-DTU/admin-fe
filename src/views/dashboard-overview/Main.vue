@@ -116,18 +116,18 @@
                             <Litepicker
                                 v-model="salesReportFilter"
                                 :options="{
-                  autoApply: false,
-                  singleMode: false,
-                  numberOfColumns: 2,
-                  numberOfMonths: 2,
-                  showWeekNumbers: true,
-                  dropdowns: {
-                    minYear: 1990,
-                    maxYear: null,
-                    months: true,
-                    years: true,
-                  },
-                }"
+                                    autoApply: false,
+                                    singleMode: false,
+                                    numberOfColumns: 2,
+                                    numberOfMonths: 2,
+                                    showWeekNumbers: true,
+                                    dropdowns: {
+                                        minYear: 1990,
+                                        maxYear: null,
+                                        months: true,
+                                        years: true,
+                                    },
+                                    }"
                                 class="form-control sm:w-56 box pl-10"
                             />
                         </div>
@@ -136,33 +136,37 @@
                         <div class="flex flex-col md:flex-row md:items-center">
                             <div class="flex">
                                 <div>
-                                    <div class="text-primary dark:text-slate-300 text-lg xl:text-xl font-medium">$15,000</div>
+                                    <div class="text-primary dark:text-slate-300 text-lg xl:text-xl font-medium">
+                                        {{formatPrice(currentPriceTotal)}}
+                                    </div>
                                     <div class="mt-0.5 text-slate-500">This Month</div>
                                 </div>
                                 <div class="w-px h-12 border border-r border-dashed border-slate-200 dark:border-darkmode-300 mx-4 xl:mx-5"></div>
                                 <div>
-                                    <div class="text-slate-500 text-lg xl:text-xl font-medium">$10,000</div>
+                                    <div class="text-slate-500 text-lg xl:text-xl font-medium">{{formatPrice(lastPriceTotal)}}</div>
                                     <div class="mt-0.5 text-slate-500">Last Month</div>
                                 </div>
                             </div>
-                            <Dropdown class="md:ml-auto mt-5 md:mt-0">
+                            <Dropdown class="md:ml-auto mt-5 md:mt-0" :show="showDropdown" @click="onToggleDropdown">
                                 <DropdownToggle class="btn btn-outline-secondary font-normal">
-                                    Filter by Category
+                                    {{categoryChoose}}
                                     <ChevronDownIcon class="w-4 h-4 ml-2" />
                                 </DropdownToggle>
                                 <DropdownMenu class="w-40">
                                     <DropdownContent class="overflow-y-auto h-32">
-                                        <DropdownItem>PC & Laptop</DropdownItem>
-                                        <DropdownItem>Smartphone</DropdownItem>
-                                        <DropdownItem>Electronic</DropdownItem>
-                                        <DropdownItem>Photography</DropdownItem>
-                                        <DropdownItem>Sport</DropdownItem>
+                                        <DropdownItem @click="selectCategory(0)">Filter by Category</DropdownItem>
+                                        <DropdownItem
+                                            v-for="(item, index) in listCategory"
+                                            :key="index"
+                                            @click="selectCategory(item.title)"
+                                            >{{item.title}}</DropdownItem
+                                        >
                                     </DropdownContent>
                                 </DropdownMenu>
                             </Dropdown>
                         </div>
                         <div class="report-chart">
-                            <ReportLineChart :height="275" class="mt-6 -mb-6" />
+                            <ReportLineChart :calculateMonthCategory="calculateMonthCategory" :height="275" class="mt-6 -mb-6" />
                         </div>
                     </div>
                 </div>
@@ -829,7 +833,7 @@ const nextImportantNotes = () => {
 import ProductApi from '../../api-services/ProductApi'
 import OrderApi from '../../api-services/OrderApi'
 import UserApi from '../../api-services/UserApi'
-
+import CategoryProductApi from '../../api-services/CategoryProductApi'
 export default {
     data() {
         return {
@@ -845,13 +849,29 @@ export default {
             percentProduct: "",
             percentUser: "",
             percentOrder: "",
-            percentItemSales: ""
+            percentItemSales: "",
+            months : [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ],
+            categoryStatistic: [],
+            calculateMonthCategory: [],
+            categoryTotal: [],
+            currentSoldTotal: 0,
+            currentPriceTotal: 0,
+            lastSoldTotal: 0,
+            lastPriceTotal: 0,
+            listCategory: [],
+            showDropdown: false,
+            categoryChoose: "Filter by Category"
         }
     },
     async created() {
         await this.getListProduct()
         await this.getListOrders()
         await this.getListUser()
+        await this.getCategoryStatistic()
+        await this.getAllCategoryProduct()
     },
     methods: {
         async getListProduct() {
@@ -862,6 +882,12 @@ export default {
                 this.quantityProduct += item.quantity;
                 this.soldProduct +=item.sold
             })
+            this.loadingIconAction = false
+        },
+        async getAllCategoryProduct() {
+            this.loadingIconAction = true
+            const res = await CategoryProductApi.getAllCategoryProduct()
+            this.listCategory = res.category
             this.loadingIconAction = false
         },
         async getListOrders () {
@@ -992,8 +1018,118 @@ export default {
             }
             return percentChange;
         },
+        async getCategoryStatistic () {
+            const res = await CategoryProductApi.getCategoryStatistic();
+            this.categoryStatistic = this.calculateMonthlyTotals(res);
+            this.categoryTotal = this.calculateCategoryTotal(this.categoryStatistic);
+            this.calculateMonthCategory = this.calculateMonthCategoryTotal(this.categoryStatistic)
+            this.totalCurrentAndLastMonth(this.calculateMonthCategory)
+        },
+        calculateMonthlyTotals (data)  {
+            const newData = { ...data };
+
+            newData.report.forEach(item => {
+                for (const key in item) {
+                    const salesData = item[key][0];
+
+                    const monthlyTotals = this.months.reduce((acc, month) => {
+                        acc[month] = {
+                            soldTotal: 0,
+                            priceTotal: 0
+                        };
+
+                        if (salesData) {
+                            salesData.forEach(sale => {
+                                const saleDate = new Date(sale.date);
+                                const saleMonth = this.months[saleDate.getMonth()];
+
+                                if (saleMonth === month) {
+                                    acc[month].soldTotal += sale.sold || 0;
+                                    acc[month].priceTotal += sale.price || 0;
+                                }
+                            });
+                        }
+
+                        return acc;
+                    }, {});
+
+                    item[key][0] = [monthlyTotals];
+                }
+        });
+            return newData;
+        },
+        calculateCategoryTotal(data) {
+            const categoryTotals = {};
+
+            data.report.forEach(item => {
+                for (const key in item) {
+                    const monthlyData = item[key][0][0];
+
+                    if (!categoryTotals[key]) {
+                        categoryTotals[key] = {
+                            soldTotal: 0,
+                            priceTotal: 0
+                        };
+                    }
+
+                    for (const month in monthlyData) {
+                        categoryTotals[key].soldTotal += monthlyData[month].soldTotal;
+                        categoryTotals[key].priceTotal += monthlyData[month].priceTotal;
+                    }
+                }
+            });
+
+            return categoryTotals;
+        },
+        calculateMonthCategoryTotal(data) {
+            const monthCategoryTotals = this.months.reduce((acc, month) => {
+                acc[month] = {
+                    soldTotal: 0,
+                    priceTotal: 0
+                };
+
+                data.report.forEach(item => {
+                    for (const key in item) {
+                        const monthlyData = item[key][0][0];
+
+                        if (monthlyData[month]) {
+                            acc[month].soldTotal += monthlyData[month].soldTotal;
+                            acc[month].priceTotal += monthlyData[month].priceTotal;
+                        }
+                    }
+                });
+
+                return acc;
+            }, {});
+
+            return monthCategoryTotals;
+        },
+        totalCurrentAndLastMonth(data) {
+            const months = Object.keys(data);
+
+            const currentDate = new Date();
+            const currentMonthIndex = currentDate.getMonth();
+            const lastMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1;
+            const currentMonth = months[currentMonthIndex];
+            const lastMonth = months[lastMonthIndex];
+            this.currentSoldTotal = data[currentMonth].soldTotal;
+            this.currentPriceTotal = data[currentMonth].priceTotal;
+            this.lastSoldTotal = data[lastMonth].soldTotal;
+            this.lastPriceTotal = data[lastMonth].priceTotal;
+        },
+        totalCurrentAndLastMonthInCategory (monthlyData) {
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth() + 1;
+            const lastMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+
+            const currentMonthName = Object.keys(monthlyData)[currentMonth - 1];
+            const lastMonthName = Object.keys(monthlyData)[lastMonth - 1];
+            this.lastSoldTotal = monthlyData[lastMonthName].soldTotal;
+            this.currentSoldTotal = monthlyData[currentMonthName].soldTotal;
+            this.lastPriceTotal = monthlyData[lastMonthName].priceTotal;
+            this.currentPriceTotal = monthlyData[currentMonthName].priceTotal;
+        },
         checkItemSalse() {
-            // Tạo biến để lưu tổng số lượng sản phẩm của từng tháng
             let quantityThisMonth = 0;
             let quantityLastMonth = 0;
             const currentDate = new Date();
@@ -1002,13 +1138,11 @@ export default {
             // Lặp qua mỗi đơn hàng
             this.listOrder.forEach(order => {
                 const createdAt = new Date(order.createdAt);
-                const orderMonth = createdAt.getMonth(); // Lấy tháng của đơn hàng
+                const orderMonth = createdAt.getMonth();
 
                 // Lặp qua từng sản phẩm trong đơn hàng
                 order.products.forEach(product => {
-                    const productQuantity = parseInt(product.quatity); // Chuyển đổi quantity sang số nguyên
-
-                    // Kiểm tra xem sản phẩm được đặt trong tháng nào và cộng vào biến tương ứng
+                    const productQuantity = parseInt(product.quatity);
                     if (orderMonth === currentMonth) {
                         quantityThisMonth += productQuantity;
                     } else if (orderMonth === lastMonth) {
@@ -1041,6 +1175,25 @@ export default {
         formatPrice(price) {
             return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
         },
+        onToggleDropdown () {
+            this.showDropdown = true
+        },
+        async selectCategory(value) {
+            this.showDropdown = false
+            if (value === 0) {
+                this.categoryChoose = "Filter by Category"
+                await this.getCategoryStatistic()
+            } else {
+                this.categoryChoose = value
+            }
+            this.categoryStatistic.report.map((item, index) => {
+                if (item[value] !== undefined) {
+                    console.log(item[value][0][0]);
+                    this.totalCurrentAndLastMonthInCategory(item[value][0][0])
+                    this.calculateMonthCategory = item[value][0][0];
+                }
+            })
+        }
     }
 }
 </script>

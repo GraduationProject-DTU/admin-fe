@@ -1,19 +1,12 @@
 <template>
-  <Chart
-    type="line"
-    :width="width"
-    :height="height"
-    :data="data"
-    :options="options"
-  />
+    <Chart type="line" :width="width" :height="height" :data="data" :options="options" />
 </template>
-
 <script setup>
 import { computed } from "vue";
 import { useDarkModeStore } from "@/stores/dark-mode";
 import { useColorSchemeStore } from "@/stores/color-scheme";
 import { colors } from "@/utils/colors";
-
+import { onMounted, ref, inject, watch } from "vue";
 const props = defineProps({
   width: {
     type: [Number, String],
@@ -23,12 +16,33 @@ const props = defineProps({
     type: [Number, String],
     default: "auto",
   },
+  calculateMonthCategory: {
+    type: Object,
+    required: true,
+    default: () => ({}),
+  },
+});
+const chartRef = ref();
+const init = () => {
+  watch(props, () => {
+    console.log(props.calculateMonthCategory);
+  });
+
+};
+
+onMounted(() => {
+  init();
 });
 
 const darkMode = computed(() => useDarkModeStore().darkMode);
 const colorScheme = computed(() => useColorSchemeStore().colorScheme);
 
 const data = computed(() => {
+  const totalPrices = [];
+
+  for (const month in props.calculateMonthCategory) {
+    totalPrices.push(props.calculateMonthCategory[month].priceTotal);
+  }
   return {
     labels: [
       "Jan",
@@ -47,7 +61,7 @@ const data = computed(() => {
     datasets: [
       {
         label: "# of Votes",
-        data: [0, 200, 250, 200, 700, 550, 650, 1050, 950, 1100, 900, 1200],
+        data: totalPrices,
         borderWidth: 2,
         borderColor: colorScheme.value ? colors.primary(0.8) : "",
         backgroundColor: "transparent",
