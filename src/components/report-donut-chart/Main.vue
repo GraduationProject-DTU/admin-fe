@@ -1,11 +1,5 @@
 <template>
-  <Chart
-    type="doughnut"
-    :width="width"
-    :height="height"
-    :data="data"
-    :options="options"
-  />
+    <Chart type="doughnut" :width="width" :height="height" :data="data" :options="options" />
 </template>
 
 <script setup>
@@ -23,21 +17,46 @@ const props = defineProps({
     type: [Number, String],
     default: "auto",
   },
+  listPercentCategory: {
+    type: Object,
+    required: true,
+    default: () => ({}),
+  },
 });
 
 const darkMode = computed(() => useDarkModeStore().darkMode);
 const colorScheme = computed(() => useColorSchemeStore().colorScheme);
 
-const chartData = [15, 10, 65];
-const chartColors = () => [
-  colors.pending(0.9),
-  colors.warning(0.9),
-  colors.primary(0.9),
-];
+const chartColors = () => {
+  const initialColors = [
+    colors.primary(0.9),
+    colors.warning(0.9),
+    colors.pending(0.9),
+  ];
+
+  if (props.listPercentCategory.soldPercentage.other) {
+    initialColors.unshift(colors.secondary(0.9))
+  }
+  return initialColors;
+};
 
 const data = computed(() => {
+  const chartData = [];
+  const labels = [];
+  if (props.listPercentCategory.soldPercentage) {
+    props.listPercentCategory.soldPercentage.top3.map((item, index) => {
+      chartData.push(item[1])
+      labels.push(item[0])
+    })
+    if (props.listPercentCategory.soldPercentage.other) {
+      chartData.push(props.listPercentCategory.soldPercentage.other)
+      labels.push('Other')
+    }
+    chartData.reverse()
+    labels.reverse()
+  }
   return {
-    labels: ["31 - 50 Years old", ">= 50 Years old", "17 - 30 Years old"],
+    labels: labels,
     datasets: [
       {
         data: chartData,

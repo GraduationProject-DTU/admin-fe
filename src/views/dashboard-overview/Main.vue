@@ -133,7 +133,7 @@
                         </div>
                     </div>
                     <div class="intro-y box p-5 mt-12 sm:mt-5">
-                        <div class="flex flex-col md:flex-row md:items-center">
+                        <div class="flex flex-col md:flex-row md:items-center mt-4 mb-8">
                             <div class="flex">
                                 <div>
                                     <div class="text-primary dark:text-slate-300 text-lg xl:text-xl font-medium">
@@ -165,7 +165,7 @@
                                 </DropdownMenu>
                             </Dropdown>
                         </div>
-                        <div class="report-chart">
+                        <div class="report-chart mb-8">
                             <ReportLineChart :calculateMonthCategory="calculateMonthCategory" :height="275" class="mt-6 -mb-6" />
                         </div>
                     </div>
@@ -174,29 +174,42 @@
                 <!-- BEGIN: Weekly Top Seller -->
                 <div class="col-span-12 sm:col-span-6 lg:col-span-3 mt-8">
                     <div class="intro-y flex items-center h-10">
-                        <h2 class="text-lg font-medium truncate mr-5">Weekly Top Seller</h2>
+                        <h2 class="text-lg font-medium truncate mr-5">Highest category sales</h2>
                         <a href="" class="ml-auto text-primary truncate">Show More</a>
                     </div>
-                    <div class="intro-y box p-5 mt-5">
+                    <div class="intro-y box p-5 mt-5" v-if="listPercentCategory.pricePercentage">
                         <div class="mt-3">
-                            <ReportPieChart :height="213" />
+                            <ReportPieChart :height="213" :listPercentCategory="listPercentCategory" />
                         </div>
-                        <div class="w-52 sm:w-auto mx-auto mt-8">
-                            <div class="flex items-center">
-                                <div class="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                                <span class="truncate">17 - 30 Years old</span>
-                                <span class="font-medium ml-auto">62%</span>
-                            </div>
-                            <div class="flex items-center mt-4">
+                        <div class="flex items-center mt-4">
+                            <span class="font-medium ">Total Price: {{ formatPrice(totalPrice) }}</span>
+                        </div>
+                        <div class="w-52 sm:w-auto mx-auto mt-4" v-for="(item, index) in listPercentCategory.pricePercentage.top3" :key="index">
+                            <div class="flex items-center" v-if="index == 0">
                                 <div class="w-2 h-2 bg-pending rounded-full mr-3"></div>
-                                <span class="truncate">31 - 50 Years old</span>
-                                <span class="font-medium ml-auto">33%</span>
+                                <span class="truncate">{{item[0]}}</span>
+                                <span class="font-medium ml-auto">{{item[1]}}%</span>
                             </div>
-                            <div class="flex items-center mt-4">
+                            <div class="flex items-center mt-4" v-if="index == 1">
                                 <div class="w-2 h-2 bg-warning rounded-full mr-3"></div>
-                                <span class="truncate">>= 50 Years old</span>
-                                <span class="font-medium ml-auto">10%</span>
+                                <span class="truncate">{{item[0]}}</span>
+                                <span class="font-medium ml-auto">{{item[1]}}%</span>
                             </div>
+                            <div class="flex items-center mt-4" v-if="index == 2">
+                                <div class="w-2 h-2 bg-primary rounded-full mr-3"></div>
+                                <span class="truncate">{{item[0]}}</span>
+                                <span class="font-medium ml-auto">{{item[1]}}%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center mt-4" v-if="listPercentCategory.pricePercentage.other">
+                            <div class="w-2 h-2 bg-secondary rounded-full mr-3"></div>
+                            <span class="truncate">Other</span>
+                            <span class="font-medium ml-auto">{{listPercentCategory.pricePercentage.other}}%</span>
+                        </div>
+                        <div class="flex items-center mt-4" v-else>
+                            <div class="w-2 h-2 bg-secondary rounded-full mr-3"></div>
+                            <span class="truncate">Other</span>
+                            <span class="font-medium ml-auto">0%</span>
                         </div>
                     </div>
                 </div>
@@ -204,29 +217,42 @@
                 <!-- BEGIN: Sales Report -->
                 <div class="col-span-12 sm:col-span-6 lg:col-span-3 mt-8">
                     <div class="intro-y flex items-center h-10">
-                        <h2 class="text-lg font-medium truncate mr-5">Sales Report</h2>
+                        <h2 class="text-lg font-medium truncate mr-5">Category top sellers</h2>
                         <a href="" class="ml-auto text-primary truncate">Show More</a>
                     </div>
-                    <div class="intro-y box p-5 mt-5">
+                    <div class="intro-y box p-5 mt-5" v-if="listPercentCategory.soldPercentage">
                         <div class="mt-3">
-                            <ReportDonutChart :height="213" />
+                            <ReportDonutChart :height="213" :listPercentCategory="listPercentCategory" />
                         </div>
-                        <div class="w-52 sm:w-auto mx-auto mt-8">
-                            <div class="flex items-center">
-                                <div class="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                                <span class="truncate">17 - 30 Years old</span>
-                                <span class="font-medium ml-auto">62%</span>
-                            </div>
-                            <div class="flex items-center mt-4">
+                        <div class="flex items-center mt-4">
+                            <span class="font-medium ">Total Sold: {{ totalSold }}</span>
+                        </div>
+                        <div class="w-52 sm:w-auto mx-auto mt-4" v-for="(item, index) in listPercentCategory.soldPercentage.top3" :key="index">
+                            <div class="flex items-center" v-if="index == 0">
                                 <div class="w-2 h-2 bg-pending rounded-full mr-3"></div>
-                                <span class="truncate">31 - 50 Years old</span>
-                                <span class="font-medium ml-auto">33%</span>
+                                <span class="truncate">{{item[0]}}</span>
+                                <span class="font-medium ml-auto">{{item[1]}}%</span>
                             </div>
-                            <div class="flex items-center mt-4">
+                            <div class="flex items-center mt-4" v-if="index == 1">
                                 <div class="w-2 h-2 bg-warning rounded-full mr-3"></div>
-                                <span class="truncate">>= 50 Years old</span>
-                                <span class="font-medium ml-auto">10%</span>
+                                <span class="truncate">{{item[0]}}</span>
+                                <span class="font-medium ml-auto">{{item[1]}}%</span>
                             </div>
+                            <div class="flex items-center mt-4" v-if="index == 2">
+                                <div class="w-2 h-2 bg-primary rounded-full mr-3"></div>
+                                <span class="truncate">{{item[0]}}</span>
+                                <span class="font-medium ml-auto">{{item[1]}}%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center mt-4" v-if="listPercentCategory.soldPercentage.other">
+                            <div class="w-2 h-2 bg-secondary rounded-full mr-3"></div>
+                            <span class="truncate">Other</span>
+                            <span class="font-medium ml-auto">{{listPercentCategory.soldPercentage.other}}%</span>
+                        </div>
+                        <div class="flex items-center mt-4" v-else>
+                            <div class="w-2 h-2 bg-secondary rounded-full mr-3"></div>
+                            <span class="truncate">Other</span>
+                            <span class="font-medium ml-auto">0%</span>
                         </div>
                     </div>
                 </div>
@@ -252,7 +278,7 @@
                         <h2 class="text-lg font-medium truncate mr-5">Top Buyers Of The Week</h2>
                     </div>
                     <div class="mt-5">
-                        <div v-for="(item, index) in listOrder" :key="index" class="intro-y">
+                        <div v-for="(item, index) in listTopUserBought" :key="index" class="intro-y">
                             <div class="box px-4 py-4 mb-3 flex items-center zoom-in">
                                 <div class="w-10 h-10 flex-none image-fit rounded-md overflow-hidden">
                                     <img alt="Midone Tailwind HTML Admin Template" :src="item.orderBy.avatar" />
@@ -262,7 +288,7 @@
                                         {{ item.orderBy.firstname + " " + item.orderBy.lastname }}
                                     </div>
                                     <div class="text-slate-500 text-xs mt-0.5">
-                                        {{ formatDateTime(item.createdAt) }}
+                                        {{ item.orderBy.email }}
                                     </div>
                                 </div>
                                 <div class="py-1 px-2 rounded-full text-xs bg-success text-white cursor-pointer font-medium">
@@ -863,22 +889,26 @@ export default {
             lastPriceTotal: 0,
             listCategory: [],
             showDropdown: false,
-            categoryChoose: "Filter by Category"
+            categoryChoose: "Filter by Category",
+            listPercentCategory: {},
+            totalPrice: 0,
+            totalSold: 0,
+            listTopUserBought:[],
         }
     },
-    async created() {
-        await this.getListProduct()
-        await this.getListOrders()
-        await this.getListUser()
-        await this.getCategoryStatistic()
-        await this.getAllCategoryProduct()
+    created() {
+        this.getListProduct()
+        this.getListOrders()
+        this.getListUser()
+        this.getCategoryStatistic()
+        this.getAllCategoryProduct()
     },
     methods: {
         async getListProduct() {
             this.loadingIconAction = true
             const res = await ProductApi.getAllProduct()
             this.listProduct = res.mess
-            this.listProduct.map((item,index) => {
+            this.listProduct.map((item, index) => {
                 this.quantityProduct += item.quantity;
                 this.soldProduct +=item.sold
             })
@@ -902,7 +932,28 @@ export default {
                 })
                 item.totalBuyers = this.totalBuyers
             })
-            this.listOrder.sort((a, b) => b.totalBuyers - a.totalBuyers)
+            console.log(this.listOrder);
+            this.listOrder.sort((a, b) => {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+            this.listTopUserBought = this.listOrder.reduce((acc, order) => {
+                const foundOrderIndex = acc.findIndex(item => item.orderBy._id === order.orderBy._id);
+
+                if (foundOrderIndex !== -1) {
+                    acc[foundOrderIndex].totalBuyers += order.totalBuyers;
+                    // Có thể thực hiện thêm các thao tác khác tại đây nếu cần
+                } else {
+                    acc.push({
+                        _id: order._id,
+                        orderBy: order.orderBy,
+                        totalBuyers: order.totalBuyers,
+                        // Thêm các thông tin khác từ order nếu cần
+                    });
+                }
+
+                return acc;
+            }, []);
+            console.log(this.listTopUserBought);
             this.loadingIconAction = false
         },
         async getListUser() {
@@ -947,6 +998,33 @@ export default {
                 this.percentProduct = `${Math.abs(percentChange)}% ${percentChange > 0 ? 'Higher' : 'Lower'} than last month`;
             }
             return percentChange;
+        },
+        getPercentCategory () {
+            const totalSold = Object.values(this.categoryTotal).reduce((acc, item) => acc + item.soldTotal, 0);
+            const totalPrice = Object.values(this.categoryTotal).reduce((acc, item) => acc + item.priceTotal, 0);
+            this.totalSold = totalSold
+            this.totalPrice = totalPrice
+            let soldPercentage = {};
+            let pricePercentage = {};
+
+            for (const key in this.categoryTotal) {
+                soldPercentage[key] = Math.round((this.categoryTotal[key].soldTotal / totalSold) * 100);
+                pricePercentage[key] = Math.round((this.categoryTotal[key].priceTotal / totalPrice) * 100);
+            }
+            soldPercentage = this.topThreePercentCategory(soldPercentage)
+            this.listPercentCategory.soldPercentage = soldPercentage
+            pricePercentage = this.topThreePercentCategory(pricePercentage)
+            this.listPercentCategory.pricePercentage = pricePercentage
+        },
+        topThreePercentCategory (percentages) {
+            const sortedPercentages = Object.entries(percentages).sort(([, a], [, b]) => b - a);
+            const top3 = sortedPercentages.slice(0, 3);
+
+            const otherPercentage = sortedPercentages.slice(3).reduce((acc, [, percentage]) => acc + percentage, 0);
+            return {
+                top3: top3,
+                other: otherPercentage
+            }
         },
         checkCreateUser () {
             const currentDate = new Date();
@@ -1021,9 +1099,11 @@ export default {
         async getCategoryStatistic () {
             const res = await CategoryProductApi.getCategoryStatistic();
             this.categoryStatistic = this.calculateMonthlyTotals(res);
+            console.log(this.categoryStatistic);
             this.categoryTotal = this.calculateCategoryTotal(this.categoryStatistic);
             this.calculateMonthCategory = this.calculateMonthCategoryTotal(this.categoryStatistic)
             this.totalCurrentAndLastMonth(this.calculateMonthCategory)
+            this.getPercentCategory()
         },
         calculateMonthlyTotals (data)  {
             const newData = { ...data };
