@@ -270,6 +270,7 @@ export default {
                     formData.append('description', this.product.description)
                     formData.append('quantity', this.product.quantity)
                     formData.append('price', this.product.price)
+                    formData.append('category', this.product.category)
                     this.loadingIconAction = true
                     await ProductApi.updateProduct(this.idUpdateProduct,formData)
                     Toastify({
