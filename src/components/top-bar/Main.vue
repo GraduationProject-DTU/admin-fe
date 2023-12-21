@@ -6,8 +6,8 @@
         <div class="h-full flex items-center">
             <!-- BEGIN: Logo -->
             <a href="" class="-intro-x hidden md:flex">
-                <img alt="Icewall Tailwind HTML Admin Template" class="w-6" src="@/assets/images/logo.svg" />
-                <span class="text-white text-lg ml-3"> Icewall </span>
+                <img alt="Icewall Tailwind HTML Admin Template" class="w-6" src="/favicon.jpg" />
+                <span class="text-white text-lg ml-3"> Rose Shop </span>
             </a>
 
             <!-- END: Logo -->
