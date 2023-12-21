@@ -311,7 +311,7 @@
                             <div class="flex items-center">
                                 <div class="w-2/4 flex-none">
                                     <div class="text-lg font-medium truncate">Target Sales</div>
-                                    <div class="text-slate-500 mt-1">300 Sales</div>
+                                    <div class="text-slate-500 mt-1">{{soldProduct}} Sales</div>
                                 </div>
                                 <div class="flex-none ml-auto relative">
                                     <ReportDonutChart1 :width="90" :height="90" />
@@ -340,7 +340,7 @@
                             <div class="flex items-center">
                                 <div class="w-2/4 flex-none">
                                     <div class="text-lg font-medium truncate">New Products</div>
-                                    <div class="text-slate-500 mt-1">1450 Products</div>
+                                    <div class="text-slate-500 mt-1">{{quantityProduct}} Products</div>
                                 </div>
                                 <div class="flex-none ml-auto relative">
                                     <ReportDonutChart1 :width="90" :height="90" />
@@ -352,11 +352,11 @@
                     <div class="col-span-12 sm:col-span-6 2xl:col-span-3 intro-y">
                         <div class="box p-5 zoom-in">
                             <div class="flex">
-                                <div class="text-lg font-medium truncate mr-3">Posted Ads</div>
+                                <div class="text-lg font-medium truncate mr-3">Posted</div>
                                 <div
                                     class="py-1 px-2 flex items-center rounded-full text-xs bg-slate-100 dark:bg-darkmode-400 text-slate-500 cursor-pointer ml-auto truncate"
                                 >
-                                    180 Campaign
+                                    {{listBlog.length}} Campaign
                                 </div>
                             </div>
                             <div class="mt-1">
@@ -366,148 +366,6 @@
                     </div>
                 </div>
                 <!-- END: General Report -->
-                <!-- BEGIN: Weekly Top Products -->
-                <div class="col-span-12 mt-6">
-                    <div class="intro-y block sm:flex items-center h-10">
-                        <h2 class="text-lg font-medium truncate mr-5">Weekly Top Products</h2>
-                        <div class="flex items-center sm:ml-auto mt-3 sm:mt-0">
-                            <button class="btn box flex items-center text-slate-600 dark:text-slate-300">
-                                <FileTextIcon class="hidden sm:block w-4 h-4 mr-2" />
-                                Export to Excel
-                            </button>
-                            <button class="ml-3 btn box flex items-center text-slate-600 dark:text-slate-300">
-                                <FileTextIcon class="hidden sm:block w-4 h-4 mr-2" />
-                                Export to PDF
-                            </button>
-                        </div>
-                    </div>
-                    <div class="intro-y overflow-auto lg:overflow-visible mt-8 sm:mt-0">
-                        <table class="table table-report sm:mt-2">
-                            <thead>
-                                <tr>
-                                    <th class="whitespace-nowrap">IMAGES</th>
-                                    <th class="whitespace-nowrap">PRODUCT NAME</th>
-                                    <th class="text-center whitespace-nowrap">STOCK</th>
-                                    <th class="text-center whitespace-nowrap">STATUS</th>
-                                    <th class="text-center whitespace-nowrap">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(faker, fakerKey) in $_.take($f(), 4)" :key="fakerKey" class="intro-x">
-                                    <td class="w-40">
-                                        <div class="flex">
-                                            <div class="w-10 h-10 image-fit zoom-in">
-                                                <Tippy
-                                                    tag="img"
-                                                    alt="Midone Tailwind HTML Admin Template"
-                                                    class="rounded-full"
-                                                    :src="faker.images[0]"
-                                                    :content="`Uploaded at ${faker.dates[0]}`"
-                                                />
-                                            </div>
-                                            <div class="w-10 h-10 image-fit zoom-in -ml-5">
-                                                <Tippy
-                                                    tag="img"
-                                                    alt="Midone Tailwind HTML Admin Template"
-                                                    class="rounded-full"
-                                                    :src="faker.images[1]"
-                                                    :content="`Uploaded at ${faker.dates[1]}`"
-                                                />
-                                            </div>
-                                            <div class="w-10 h-10 image-fit zoom-in -ml-5">
-                                                <Tippy
-                                                    tag="img"
-                                                    alt="Midone Tailwind HTML Admin Template"
-                                                    class="rounded-full"
-                                                    :src="faker.images[2]"
-                                                    :content="`Uploaded at ${faker.dates[2]}`"
-                                                />
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="" class="font-medium whitespace-nowrap">{{
-                      faker.products[0].name
-                                        }}</a>
-                                        <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">
-                                            {{ faker.products[0].category }}
-                                        </div>
-                                    </td>
-                                    <td class="text-center">{{ faker.stocks[0] }}</td>
-                                    <td class="w-40">
-                                        <div
-                                            class="flex items-center justify-center"
-                                            :class="{
-                        'text-success': faker.trueFalse[0],
-                        'text-danger': !faker.trueFalse[0],
-                      }"
-                                        >
-                                            <CheckSquareIcon class="w-4 h-4 mr-2" />
-                                            {{ faker.trueFalse[0] ? "Active" : "Inactive" }}
-                                        </div>
-                                    </td>
-                                    <td class="table-report__action w-56">
-                                        <div class="flex justify-center items-center">
-                                            <a class="flex items-center mr-3" href="">
-                                                <CheckSquareIcon class="w-4 h-4 mr-1" />
-                                                Edit
-                                            </a>
-                                            <a class="flex items-center text-danger" href=""> <Trash2Icon class="w-4 h-4 mr-1" /> Delete </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="intro-y flex flex-wrap sm:flex-row sm:flex-nowrap items-center mt-3">
-                        <nav class="w-full sm:w-auto sm:mr-auto">
-                            <ul class="pagination">
-                                <li class="page-item">
-                                    <a class="page-link" href="#">
-                                        <ChevronsLeftIcon class="w-4 h-4" />
-                                    </a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">
-                                        <ChevronLeftIcon class="w-4 h-4" />
-                                    </a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">...</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">1</a>
-                                </li>
-                                <li class="page-item active">
-                                    <a class="page-link" href="#">2</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">3</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">...</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">
-                                        <ChevronRightIcon class="w-4 h-4" />
-                                    </a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">
-                                        <ChevronsRightIcon class="w-4 h-4" />
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                        <select class="w-20 form-select box mt-3 sm:mt-0">
-                            <option>10</option>
-                            <option>25</option>
-                            <option>35</option>
-                            <option>50</option>
-                        </select>
-                    </div>
-                </div>
-                <!-- END: Weekly Top Products -->
             </div>
         </div>
         <div class="col-span-12 2xl:col-span-3">
@@ -546,128 +404,7 @@
                         </div>
                     </div>
                     <!-- END: Transactions -->
-                    <!-- BEGIN: Recent Activities -->
-                    <div class="col-span-12 md:col-span-6 xl:col-span-4 2xl:col-span-12 mt-3">
-                        <div class="intro-x flex items-center h-10">
-                            <h2 class="text-lg font-medium truncate mr-5">Recent Activities</h2>
-                            <a href="" class="ml-auto text-primary truncate">Show More</a>
-                        </div>
-                        <div
-                            class="mt-5 relative before:block before:absolute before:w-px before:h-[85%] before:bg-slate-200 before:dark:bg-darkmode-400 before:ml-5 before:mt-5"
-                        >
-                            <div class="intro-x relative flex items-center mb-3">
-                                <div
-                                    class="before:block before:absolute before:w-20 before:h-px before:bg-slate-200 before:dark:bg-darkmode-400 before:mt-5 before:ml-5"
-                                >
-                                    <div class="w-10 h-10 flex-none image-fit rounded-full overflow-hidden">
-                                        <img alt="Midone Tailwind HTML Admin Template" :src="$f()[9].photos[0]" />
-                                    </div>
-                                </div>
-                                <div class="box px-5 py-3 ml-4 flex-1 zoom-in">
-                                    <div class="flex items-center">
-                                        <div class="font-medium">
-                                            {{ $f()[9].users[0].name }}
-                                        </div>
-                                        <div class="text-xs text-slate-500 ml-auto">07:00 PM</div>
-                                    </div>
-                                    <div class="text-slate-500 mt-1">Has joined the team</div>
-                                </div>
-                            </div>
-                            <div class="intro-x relative flex items-center mb-3">
-                                <div
-                                    class="before:block before:absolute before:w-20 before:h-px before:bg-slate-200 before:dark:bg-darkmode-400 before:mt-5 before:ml-5"
-                                >
-                                    <div class="w-10 h-10 flex-none image-fit rounded-full overflow-hidden">
-                                        <img alt="Midone Tailwind HTML Admin Template" :src="$f()[8].photos[0]" />
-                                    </div>
-                                </div>
-                                <div class="box px-5 py-3 ml-4 flex-1 zoom-in">
-                                    <div class="flex items-center">
-                                        <div class="font-medium">
-                                            {{ $f()[8].users[0].name }}
-                                        </div>
-                                        <div class="text-xs text-slate-500 ml-auto">07:00 PM</div>
-                                    </div>
-                                    <div class="text-slate-500">
-                                        <div class="mt-1">Added 3 new photos</div>
-                                        <div class="flex mt-2">
-                                            <Tippy tag="div" class="w-8 h-8 image-fit mr-1 zoom-in" :content="$f()[0].products[0].name">
-                                                <img
-                                                    alt="Midone Tailwind HTML Admin Template"
-                                                    class="rounded-md border border-white"
-                                                    :src="$f()[8].images[0]"
-                                                />
-                                            </Tippy>
-                                            <Tippy tag="div" class="w-8 h-8 image-fit mr-1 zoom-in" :content="$f()[1].products[0].name">
-                                                <img
-                                                    alt="Midone Tailwind HTML Admin Template"
-                                                    class="rounded-md border border-white"
-                                                    :src="$f()[8].images[1]"
-                                                />
-                                            </Tippy>
-                                            <Tippy tag="div" class="w-8 h-8 image-fit mr-1 zoom-in" :content="$f()[2].products[0].name">
-                                                <img
-                                                    alt="Midone Tailwind HTML Admin Template"
-                                                    class="rounded-md border border-white"
-                                                    :src="$f()[8].images[2]"
-                                                />
-                                            </Tippy>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="intro-x text-slate-500 text-xs text-center my-4">12 November</div>
-                            <div class="intro-x relative flex items-center mb-3">
-                                <div
-                                    class="before:block before:absolute before:w-20 before:h-px before:bg-slate-200 before:dark:bg-darkmode-400 before:mt-5 before:ml-5"
-                                >
-                                    <div class="w-10 h-10 flex-none image-fit rounded-full overflow-hidden">
-                                        <img alt="Midone Tailwind HTML Admin Template" :src="$f()[7].photos[0]" />
-                                    </div>
-                                </div>
-                                <div class="box px-5 py-3 ml-4 flex-1 zoom-in">
-                                    <div class="flex items-center">
-                                        <div class="font-medium">
-                                            {{ $f()[7].users[0].name }}
-                                        </div>
-                                        <div class="text-xs text-slate-500 ml-auto">07:00 PM</div>
-                                    </div>
-                                    <div class="text-slate-500 mt-1">
-                                        Has changed
-                                        <a class="text-primary" href="">{{
-                      $f()[7].products[0].name
-                                        }}</a>
-                                        price and description
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="intro-x relative flex items-center mb-3">
-                                <div
-                                    class="before:block before:absolute before:w-20 before:h-px before:bg-slate-200 before:dark:bg-darkmode-400 before:mt-5 before:ml-5"
-                                >
-                                    <div class="w-10 h-10 flex-none image-fit rounded-full overflow-hidden">
-                                        <img alt="Midone Tailwind HTML Admin Template" :src="$f()[6].photos[0]" />
-                                    </div>
-                                </div>
-                                <div class="box px-5 py-3 ml-4 flex-1 zoom-in">
-                                    <div class="flex items-center">
-                                        <div class="font-medium">
-                                            {{ $f()[6].users[0].name }}
-                                        </div>
-                                        <div class="text-xs text-slate-500 ml-auto">07:00 PM</div>
-                                    </div>
-                                    <div class="text-slate-500 mt-1">
-                                        Has changed
-                                        <a class="text-primary" href="">{{
-                      $f()[6].products[0].name
-                                        }}</a>
-                                        description
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- END: Recent Activities -->
+
                     <!-- BEGIN: Important Notes -->
                     <div class="col-span-12 md:col-span-6 xl:col-span-12 xl:col-start-1 xl:row-start-1 2xl:col-start-auto 2xl:row-start-auto mt-3">
                         <div class="intro-x flex items-center h-10">
@@ -861,6 +598,7 @@ import ProductApi from '../../api-services/ProductApi'
 import OrderApi from '../../api-services/OrderApi'
 import UserApi from '../../api-services/UserApi'
 import CategoryProductApi from '../../api-services/CategoryProductApi'
+import BlogApi from '../../api-services/BlogApi';
 export default {
     data() {
         return {
@@ -896,7 +634,8 @@ export default {
             totalSold: 0,
             listTopUserBought:[],
             displayedItems: [],
-            showAll: false
+            showAll: false,
+            listBlog: []
         }
     },
     created() {
@@ -905,6 +644,7 @@ export default {
         this.getListUser()
         this.getCategoryStatistic()
         this.getAllCategoryProduct()
+        this.getAllBlog()
     },
     methods: {
         async getListProduct() {
@@ -921,6 +661,12 @@ export default {
             this.loadingIconAction = true
             const res = await CategoryProductApi.getAllCategoryProduct()
             this.listCategory = res.category
+            this.loadingIconAction = false
+        },
+        async getAllBlog () {
+            this.loadingIconAction = true
+            const res = await BlogApi.getAllBlog()
+            this.listBlog = res.blogs
             this.loadingIconAction = false
         },
         async getListOrders () {
