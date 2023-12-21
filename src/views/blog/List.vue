@@ -15,10 +15,10 @@
                     <img alt="Midone Tailwind HTML Admin Template" class="rounded-t-md" :src="item.images[0]" />
                     <div class="absolute w-full flex items-center px-5 pt-6 z-10">
                         <div class="w-10 h-10 flex-none image-fit">
-                            <img alt="Midone Tailwind HTML Admin Template" class="rounded-full" :src="item.images[0]" />
+                            <img alt="Midone Tailwind HTML Admin Template" class="rounded-full" :src="item.author.avatar" />
                         </div>
                         <div class="ml-3 text-white mr-auto">
-                            <a href="" class="font-medium">{{ item.author }}</a>
+                            <a href="" class="font-medium">{{ item.author.firstname + " " + item.author.lastname }}</a>
                             <div class="text-xs mt-0.5">{{ formatDate(item.createdAt) }}</div>
                         </div>
                         <Dropdown class="ml-3">
