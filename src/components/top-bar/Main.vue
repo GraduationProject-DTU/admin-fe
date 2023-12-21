@@ -16,7 +16,7 @@
             <!-- END: Breadcrumb -->
             <!-- BEGIN: Search -->
             <div class="intro-x relative mr-3 sm:mr-6">
-                <div class="search hidden sm:block">
+                <!-- <div class="search hidden sm:block">
                     <input
                         type="text"
                         class="search__input form-control border-transparent"
@@ -28,8 +28,8 @@
                 </div>
                 <a class="notification notification--light sm:hidden" href="">
                     <SearchIcon class="notification__icon dark:text-slate-500" />
-                </a>
-                <div class="search-result" :class="{ show: searchDropdown }">
+                </a> -->
+                <!-- <div class="search-result" :class="{ show: searchDropdown }">
                     <div class="search-result__content">
                         <div class="search-result__content__title">Pages</div>
                         <div class="mb-5">
@@ -75,7 +75,7 @@
                             </div>
                         </a>
                     </div>
-                </div>
+                </div> -->
             </div>
             <!-- END: Search -->
             <!-- BEGIN: Notifications -->
