@@ -148,11 +148,6 @@ export const useSideMenuStore = defineStore('sideMenu', {
                         icon: 'PlusSquareIcon',
                         pageName: 'coupons-create',
                         title: 'Create Coupons'
-                    },
-                    {
-                        icon: 'GitPullRequestIcon',
-                        pageName: 'apply-coupons',
-                        title: 'Apply Coupons'
                     }
                 ]
             }
