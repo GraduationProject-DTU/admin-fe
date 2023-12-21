@@ -21,7 +21,7 @@
                                             <Tippy
                                                 tag="div"
                                                 class="report-box__indicator cursor-pointer"
-                                                :class="{'bg-success' : checkItemSalse() > 0, 'bg-danger' : checkItemSalse() < 0, 'bg-slate-500' : checkItemSalse() == 0 }"
+                                                :class="{'bg-success' : checkItemSalse() > 0, 'bg-danger' : checkItemSalse() < 0, 'bg-slate-500' : checkItemSalse() == 0, }"
                                                 :content="percentItemSales"
                                             >
                                                 {{checkItemSalse()}}% <ChevronUpIcon class="w-4 h-4 ml-0.5" v-if="checkItemSalse() > 0" />
@@ -518,8 +518,8 @@
                         <div class="intro-x flex items-center h-10">
                             <h2 class="text-lg font-medium truncate mr-5">Transactions</h2>
                         </div>
-                        <div class="mt-5">
-                            <div v-for="(item, index) in listOrder" :key="index" class="intro-x">
+                        <div class="mt-5" id="itemContainer">
+                            <div v-for="(item, index) in displayedItems" :key="index" class="intro-x">
                                 <div class="box px-5 py-3 mb-3 flex items-center zoom-in">
                                     <div class="w-10 h-10 flex-none image-fit rounded-full overflow-hidden">
                                         <img alt="Midone Tailwind HTML Admin Template" :src="item?.orderBy?.avatar" />
@@ -538,8 +538,9 @@
                                 </div>
                             </div>
                             <a
-                                href=""
+                                href="javascript:;"
                                 class="intro-x w-full block text-center rounded-md py-3 border border-dotted border-slate-400 dark:border-darkmode-300 text-slate-500"
+                                @click="showMoreItems"
                                 >View More</a
                             >
                         </div>
@@ -894,6 +895,8 @@ export default {
             totalPrice: 0,
             totalSold: 0,
             listTopUserBought:[],
+            displayedItems: [],
+            showAll: false
         }
     },
     created() {
@@ -935,21 +938,25 @@ export default {
             this.listOrder.sort((a, b) => {
                 return new Date(b.createdAt) - new Date(a.createdAt);
             });
+            this.displayedItems = this.listOrder.slice(0, 5);
             this.listTopUserBought = this.listOrder.reduce((acc, order) => {
                 const foundOrderIndex = acc.findIndex(item => item.orderBy._id === order.orderBy._id);
 
                 if (foundOrderIndex !== -1) {
                     acc[foundOrderIndex].totalBuyers += order.totalBuyers;
+                    // Có thể thực hiện thêm các thao tác khác tại đây nếu cần
                 } else {
                     acc.push({
                         _id: order._id,
                         orderBy: order.orderBy,
                         totalBuyers: order.totalBuyers,
+                        // Thêm các thông tin khác từ order nếu cần
                     });
                 }
 
                 return acc;
             }, []);
+            console.log(this.listTopUserBought);
             this.loadingIconAction = false
         },
         async getListUser() {
@@ -960,34 +967,28 @@ export default {
             this.loadingIconAction = false
         },
         checkCreateProduct() {
-            let i = 0;
-            while(this.listProduct.length == 0) {
-                this.loadingIconAction = true
-                i++
-                if (i == 7) {
-                    this.loadingIconAction = false
-                    this.percentProduct = "No change compared to last month";
-                    return 0
-                }
-            }
             const currentDate = new Date();
             const currentMonth = currentDate.getMonth() + 1;
             const lastMonth = currentDate.getMonth();
-            let totalProductCurrentMonth = 0
-            let totalProductLastMonth = 0
-            this.listProduct.map((item, index) => {
-                const productCreatedAt = new Date(item.updatedAt);
+
+            const productThisMonth = this.listProduct.filter(product => {
+                const productCreatedAt = new Date(product.createdAt);
                 const productCreatedMonth = productCreatedAt.getMonth() + 1;
-                if(productCreatedMonth === currentMonth) {
-                    totalProductCurrentMonth += item.quantity
-                } else if (productCreatedMonth === lastMonth) {
-                    totalProductLastMonth += item.quantity
-                }
-            })
+
+                return productCreatedMonth === currentMonth;
+            });
+            const productLastMonth = this.listProduct.filter(product => {
+                const productCreatedAt = new Date(product.createdAt);
+                const productCreatedMonth = productCreatedAt.getMonth() + 1;
+
+                return productCreatedMonth === lastMonth;
+            });
+            const productThisMonthCount = productThisMonth.length;
+            const productLastMonthCount = productLastMonth.length;
             let percentChange = 0
-            if (totalProductLastMonth > 0) {
-                percentChange = ((totalProductCurrentMonth - totalProductLastMonth) / totalProductLastMonth) * 100;
-            } else if (totalProductLastMonth == totalProductCurrentMonth) {
+            if (productLastMonthCount != 0) {
+                percentChange = ((productThisMonthCount - productLastMonthCount) / productLastMonthCount) * 100;
+            } else if (productLastMonthCount == productThisMonthCount) {
                 percentChange = 0
             }
             else {
@@ -996,9 +997,10 @@ export default {
             if (percentChange == 0) {
                 this.percentProduct = "No change compared to last month";
             } else {
-                this.percentProduct = `${Math.abs(Math.round(percentChange))}% ${Math.round(percentChange) > 0 ? 'Higher' : 'Lower'} than last month`;
+
+                this.percentProduct = `${Math.abs(percentChange)}% ${percentChange > 0 ? 'Higher' : 'Lower'} than last month`;
             }
-            return Math.round(percentChange);
+            return percentChange;
         },
         getPercentCategory () {
             const totalSold = Object.values(this.categoryTotal).reduce((acc, item) => acc + item.soldTotal, 0);
@@ -1028,16 +1030,6 @@ export default {
             }
         },
         checkCreateUser () {
-            let i = 0;
-            while(this.listUser.length == 0) {
-                this.loadingIconAction = true
-                i++
-                if (i == 7) {
-                    this.loadingIconAction = false
-                    this.percentProduct = "No change compared to last month";
-                    return 0
-                }
-            }
             const currentDate = new Date();
             const currentMonth = currentDate.getMonth() + 1;
             const lastMonth = currentDate.getMonth();
@@ -1068,21 +1060,11 @@ export default {
                 this.percentUser = "No change compared to last month";
             } else {
 
-                this.percentUser = `${Math.abs(Math.round(percentChange))}% ${Math.round(percentChange) > 0 ? 'Higher' : 'Lower'} than last month`;
+                this.percentUser = `${Math.abs(percentChange)}% ${percentChange > 0 ? 'Higher' : 'Lower'} than last month`;
             }
-            return Math.round(percentChange);
+            return percentChange;
         },
         checkCreateOrder () {
-            let i = 0;
-            while(this.listOrder.length == 0) {
-                this.loadingIconAction = true
-                i++
-                if (i == 7) {
-                    this.loadingIconAction = false
-                    this.percentOrder = "No change compared to last month";
-                    return 0
-                }
-            }
             const currentDate = new Date();
             const currentMonth = currentDate.getMonth() + 1;
             const lastMonth = currentDate.getMonth();
@@ -1113,13 +1095,14 @@ export default {
                 this.percentOrder = "No change compared to last month";
             } else {
 
-                this.percentOrder = `${Math.abs(Math.round(percentChange))}% ${Math.round(percentChange) > 0 ? 'Higher' : 'Lower'} than last month`;
+                this.percentOrder = `${Math.abs(percentChange)}% ${percentChange > 0 ? 'Higher' : 'Lower'} than last month`;
             }
-            return Math.round(percentChange);
+            return percentChange;
         },
         async getCategoryStatistic () {
             const res = await CategoryProductApi.getCategoryStatistic();
             this.categoryStatistic = this.calculateMonthlyTotals(res);
+            console.log(this.categoryStatistic);
             this.categoryTotal = this.calculateCategoryTotal(this.categoryStatistic);
             this.calculateMonthCategory = this.calculateMonthCategoryTotal(this.categoryStatistic)
             this.totalCurrentAndLastMonth(this.calculateMonthCategory)
@@ -1230,24 +1213,17 @@ export default {
             this.currentPriceTotal = monthlyData[currentMonthName].priceTotal;
         },
         checkItemSalse() {
-            let i = 0;
-            while(this.listOrder.length == 0) {
-                this.loadingIconAction = true
-                i++
-                if (i == 7) {
-                    this.loadingIconAction = false
-                    this.percentItemSales = "No change compared to last month";
-                    return 0
-                }
-            }
             let quantityThisMonth = 0;
             let quantityLastMonth = 0;
             const currentDate = new Date();
             const currentMonth = currentDate.getMonth() + 1;
             const lastMonth = currentDate.getMonth();
+            // Lặp qua mỗi đơn hàng
             this.listOrder.forEach(order => {
                 const createdAt = new Date(order.createdAt);
-                const orderMonth = createdAt.getMonth() + 1;
+                const orderMonth = createdAt.getMonth();
+
+                // Lặp qua từng sản phẩm trong đơn hàng
                 order.products.forEach(product => {
                     const productQuantity = parseInt(product.quatity);
                     if (orderMonth === currentMonth) {
@@ -1258,19 +1234,20 @@ export default {
                 });
             });
             let percentChange = 0
-            if (quantityLastMonth > 0) {
+            if (quantityLastMonth != 0) {
                 percentChange = ((quantityThisMonth - quantityLastMonth) / quantityLastMonth) * 100;
             }else if (quantityLastMonth == quantityThisMonth) {
                 percentChange = 0
-            } else if (quantityLastMonth == 0) {
+            } else {
                 percentChange = 100
             }
             if (percentChange == 0) {
                 this.percentItemSales = "No change compared to last month";
             } else {
-                this.percentItemSales = `${Math.abs(Math.round(percentChange))}% ${Math.round(percentChange) > 0 ? 'Higher' : 'Lower'} than last month`;
+
+                this.percentItemSales = `${Math.abs(percentChange)}% ${percentChange > 0 ? 'Higher' : 'Lower'} than last month`;
             }
-            return Math.round(percentChange)
+            return percentChange
         },
         formatDateTime(date) {
             const originalDateTime = new Date(date);
@@ -1294,11 +1271,23 @@ export default {
             }
             this.categoryStatistic.report.map((item, index) => {
                 if (item[value] !== undefined) {
+                    console.log(item[value][0][0]);
                     this.totalCurrentAndLastMonthInCategory(item[value][0][0])
                     this.calculateMonthCategory = item[value][0][0];
                 }
             })
+        },
+        showMoreItems() {
+            if (!this.showAll) {
+                this.displayedItems = this.listOrder.slice(0, 10);
+            } else {
+                this.displayedItems = this.listOrder;
+            }
+            this.showAll = !this.showAll;
         }
+    },
+    computed() {
+
     }
 }
 </script>

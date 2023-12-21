@@ -14,7 +14,6 @@
                         <tr>
                             <th class="whitespace-nowrap">STT</th>
                             <th class="whitespace-nowrap">Loại giảm giá</th>
-                            <th class="whitespace-nowrap">Mức giảm giá (%)</th>
                             <th class="whitespace-nowrap">Hạn giảm giá</th>
                             <th class="whitespace-nowrap">Ngày tạo</th>
                         </tr>
@@ -23,7 +22,6 @@
                         <tr class="intro-x" v-for="(item, index) in dataPage" :key="index" :value="index">
                             <td>{{ index + 1 }}</td>
                             <td>{{ item.name }}</td>
-                            <td>{{ item.disCount }} %</td>
                             <td>{{ item.expiresIn.substring(0, 10) }}</td>
                             <td>{{ item.createdAt.substring(0, 10) }}</td>
                             <td class="table-report__action w-30">
