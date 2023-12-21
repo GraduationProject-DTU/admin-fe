@@ -1279,7 +1279,7 @@ export default {
         },
         showMoreItems() {
             if (!this.showAll) {
-                this.displayedItems = this.listOrder.slice(0, 10);
+                this.displayedItems = this.listOrder.slice(0, 5);
             } else {
                 this.displayedItems = this.listOrder;
             }
